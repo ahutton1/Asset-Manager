@@ -7,6 +7,7 @@ import enums.*;
 public class User {
     //TODO flush out user class variables
     private String lastName, firstName, deptCode, manager, email;
+    private employmentStatus empStat;
 
     public User(){
         //TODO
