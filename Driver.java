@@ -9,7 +9,7 @@ class Driver{
     public static void main(String args[]){
         try{
             //Determine where the program is connecting to
-            Class.forName("jdbc:sqlserver://10.221.0.220;urmhc_equipment");
+            Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
 
             //Establish a connection with the specific database
             Connection conn = DriverManager.getConnection("jdbc:odbc:urmhc_equipment","read","vnsread");
@@ -20,17 +20,24 @@ class Driver{
             //Create a placeholder for the results from a given select query
             ResultSet rs;
 
-            //TODO Implement the select statement and printing method to test if the connection worked as it needs to
+            //Build out the testing suite and run the required tests
+            rs = stmt.executeQuery("SELECT AssedID FROM tblAssets");
+            while(rs.next()){
+                int assetID = rs.getInt("AssetID");
+                System.out.println(assetID);
+            }
+            conn.close();
 
         }catch(Exception e){
             System.out.println("Connection error occured. Logging and shutting down");
             System.out.println(e);
-            //try{
-                //FileHandler fh = new FileHandler("ErrorLog.log");
-                //Logger logger;
-            //}catch(Exception logError){
-
-            //}
+            /*try{
+                FileHandler fh = new FileHandler("ErrorLog.log");
+                Logger logger;
+            }catch(Exception logError){
+                System.out.println("Fatal Error Occured. Error Logging Failed. Shutting Down");
+                System.out.println(logError);
+            }*/
         }
 
     }
