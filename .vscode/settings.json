@@ -1,0 +1,8 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "sqljdbc_8.2/enu/mssql-jdbc-8.2.2.jre8.jar",
+        "sqljdbc_8.2/enu/mssql-jdbc-8.2.2.jre11.jar",
+        "sqljdbc_8.2/enu/mssql-jdbc-8.2.2.jre13.jar"
+    ]
+}
