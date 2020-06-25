@@ -9,10 +9,11 @@ class Driver{
     public static void main(String args[]){
         try{
             //Determine where the program is connecting to
-            Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
+            //Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
 
             //Establish a connection with the specific database
-            Connection conn = DriverManager.getConnection("jdbc:odbc:urmhc_equipment","read","vnsread");
+            //Connection conn = DriverManager.getConnection("jdbc:ucanaccess:10.221.0.220/Databases/urmhc_equipment","read","vnsread");
+            Connection conn = DriverManager.getConnection("jdbc:sqlserver://10.221.0.220;databaseName=urmhc_equipment;user=read;password=vnsread");
 
             //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
             Statement stmt = conn.createStatement();
@@ -21,7 +22,7 @@ class Driver{
             ResultSet rs;
 
             //Build out the testing suite and run the required tests
-            rs = stmt.executeQuery("SELECT AssedID FROM tblAssets");
+            rs = stmt.executeQuery("SELECT AssetID FROM tblAssets");
             while(rs.next()){
                 int assetID = rs.getInt("AssetID");
                 System.out.println(assetID);
