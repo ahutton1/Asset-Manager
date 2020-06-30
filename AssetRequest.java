@@ -44,6 +44,14 @@ public class AssetRequest<E extends Serializable> implements Serializable{
          * upon receiving this message.
          */
         ERROR, 
+
+        /**
+         * CLIENT
+         * Used by the client as a means of throwing an internal application error without causing a complete 
+         * shutdown of the server in the mean time. Mainly used when the system fails to read a request that has been 
+         * sent correctly, and the user needs to be notified that something internally had gone wrong.
+         */
+        USER_ERROR,
         
         /**
          * CLIENT

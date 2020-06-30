@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.lang.System.Logger;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ class Driver{
 
     //Server variables
     private int port;
-    private ArrayList clients;
+    protected ArrayList clients;
 
     //Debugging variable. Used to see if the server is actively accepting another server thread
     private boolean listeningDebugger;
@@ -57,7 +58,7 @@ class Driver{
 
     protected Driver(int port){
         this.port = port;
-        clients = new ArrayList();
+        clients = new ArrayList<String>();
         runLoop();
     }
 
