@@ -15,8 +15,8 @@ public class sqlStatementHandler {
      * added to the tables.
      * @return true or false depending on whether the message was sent successfully
      */
-    public boolean reqNewAsset(){
-        return true;
+    public String reqNewAsset(){
+        return "NULL";
     }
 
     /**
@@ -25,8 +25,8 @@ public class sqlStatementHandler {
      * CRITICALITY)
      * @return true or false depending on whether the message was sent successfully
      */
-    public boolean reqNewUser(){
-        return true;
+    public String reqNewUser(){
+        return "NULL";
     }
 
     /**
@@ -35,8 +35,8 @@ public class sqlStatementHandler {
      * time.
      * @return true or false depending on whether the message was sent successfully
      */
-    public boolean reqAssetList(){
-        return true;
+    public String reqAssetList(){
+        return "NULL";
     }
 
     /**
@@ -44,8 +44,8 @@ public class sqlStatementHandler {
      * stored in the tables, based on what search conditions a user has on at any given time.
      * @return true or false depending on whether the message was sent successfully
      */
-    public boolean reqUserList(){
-        return true;
+    public String reqUserList(){
+        return "NULL";
     }
 
     /**
@@ -54,8 +54,8 @@ public class sqlStatementHandler {
      * on the right hand side of the application screen.
      * @return true or false depending on whether the message was sent successfully
      */
-    public boolean reqUserInfo(){
-        return true;
+    public String reqUserInfo(){
+        return "NULL";
     }
 
     /**
@@ -64,8 +64,8 @@ public class sqlStatementHandler {
      * panel on the right hand side of the application screen
      * @return true or false depending on whether the message was sent successfully
      */
-    public boolean reqAssetInfo(){
-        return true;
+    public String reqAssetInfo(){
+        return "NULL";
     }
     
 }

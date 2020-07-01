@@ -22,6 +22,7 @@ public class serverThread extends AssetConnection{
                 //Recognize and pull incoming request from the server
                 AssetRequest<?> request = readRequest();
 
+                /** TODO: Devleop returns on each case that sends the useror asset data back to the client GUI */
                 //Determine what the request is asking for/wants/is telling the client
                 switch(request.getType()){
                     case LOGIN:
@@ -34,6 +35,7 @@ public class serverThread extends AssetConnection{
                         //Sent by server. Should not be received here
                         break;
                     case LOGOUT:
+                        logoff();
                         break;
                     case ERROR:
                         //Sent by server. Should not be received here
@@ -41,16 +43,22 @@ public class serverThread extends AssetConnection{
                     case USER_ERROR:
                         break;
                     case NEW_ASSET:
+                        server.createNewAsset(request);
                         break;
                     case NEW_USER:
+                        server.createNewUser(request);
                         break;
                     case CALL_ASSET:
+                        server.callAsset(request);
                         break;
                     case CALL_USER:
+                        server.callUser(request);
                         break;
                     case CALL_ASSET_LIST:
+                        server.callAssetList(request);
                         break;
                     case CALL_USER_LIST:
+                        server.callUserList(request);
                         break;
                     default:
                         throw new Exception("Error reading request from server");

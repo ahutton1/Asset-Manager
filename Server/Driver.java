@@ -14,7 +14,8 @@ class Driver{
 
     //Server variables
     private int port;
-    protected ArrayList clients;
+    protected ArrayList<String> clients;
+    private static String servURL = "jdbc:sqlserver://10.221.0.220;databaseName=urmhc_equipment;user=read;password=vnsread";
 
     //Debugging variable. Used to see if the server is actively accepting another server thread
     private boolean listeningDebugger;
@@ -22,13 +23,13 @@ class Driver{
     public static void main(String args[]){
         try{
             //Establish a connection with the specific database
-            Connection conn = DriverManager.getConnection("jdbc:sqlserver://10.221.0.220;databaseName=urmhc_equipment;user=read;password=vnsread");
+            Connection conn = DriverManager.getConnection(servURL);
 
             //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
             Statement stmt = conn.createStatement();
 
             //Create a placeholder for the results from a given select query
-            ResultSet rs;
+            ResultSet rs;   
 
             //Build out the testing suite and run the required tests
             rs = stmt.executeQuery("SELECT AssetID FROM tblAssets");
@@ -86,8 +87,33 @@ class Driver{
      * of data is being created. Utilizes the sqlStatementHandler class for assistance with
      * creating the statement.
      */
-    public void createNewUser(){
+    public void createNewUser(AssetRequest<?> incomingRequest){
+        try{
+            //Establish a connection with the specific database
+            Connection conn = DriverManager.getConnection(servURL);
 
+            //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
+            Statement stmt = conn.createStatement();
+
+            //Create a placeholder for the results from a given select query
+            ResultSet rs;   
+
+            sqlStatementHandler ssh = new sqlStatementHandler();
+
+            //Build out the testing suite and run the required tests
+            rs = stmt.executeQuery(ssh.reqNewUser());
+
+            //Not necessary for methods that will not be returning anything
+            while(rs.next()){
+                //Any returning statements go here
+            }
+
+            //Close the connection for network security and bandwith reduction
+            conn.close();
+        }catch(Exception e){
+            System.out.println("Error in creating a new user");
+            System.out.println(e);
+        }
     }
 
     /**
@@ -95,8 +121,33 @@ class Driver{
      * of data is being created. Utilizes the sqlStatementHandler class for assistance with
      * creating the statement.
      */
-    public void createNewAsset(){
+    public void createNewAsset(AssetRequest<?> incomingRequest){
+        try{
+            //Establish a connection with the specific database
+            Connection conn = DriverManager.getConnection(servURL);
 
+            //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
+            Statement stmt = conn.createStatement();
+
+            //Create a placeholder for the results from a given select query
+            ResultSet rs;   
+
+            sqlStatementHandler ssh = new sqlStatementHandler();
+
+            //Build out the testing suite and run the required tests
+            rs = stmt.executeQuery(ssh.reqNewAsset());
+
+            //Not necessary for methods that will not be returning anything
+            while(rs.next()){
+                //Any returning statements go here
+            }
+
+            //Close the connection for network security and bandwith reduction
+            conn.close();
+        }catch(Exception e){
+            System.out.println("Error in creating a new user");
+            System.out.println(e);
+        }
     }
 
     /**
@@ -105,8 +156,33 @@ class Driver{
      * to the client. Utilizes the sqlStatementHandler class for assistance with creating the 
      * statement.
      */
-    public void callAsset(){
+    public void callAsset(AssetRequest<?> incomingRequest){
+        try{
+            //Establish a connection with the specific database
+            Connection conn = DriverManager.getConnection(servURL);
 
+            //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
+            Statement stmt = conn.createStatement();
+
+            //Create a placeholder for the results from a given select query
+            ResultSet rs;   
+
+            sqlStatementHandler ssh = new sqlStatementHandler();
+
+            //Build out the testing suite and run the required tests
+            rs = stmt.executeQuery(ssh.reqAssetInfo());
+
+            //Not necessary for methods that will not be returning anything
+            while(rs.next()){
+                //Any returning statements go here
+            }
+
+            //Close the connection for network security and bandwith reduction
+            conn.close();
+        }catch(Exception e){
+            System.out.println("Error in creating a new user");
+            System.out.println(e);
+        }
     }
 
     /**
@@ -115,8 +191,33 @@ class Driver{
      * to the client. Utilizes the sqlStatementHandler class for assistance with creating the 
      * statement.
      */
-    public void callUser(){
+    public void callUser(AssetRequest<?> incomingRequest){
+        try{
+            //Establish a connection with the specific database
+            Connection conn = DriverManager.getConnection(servURL);
 
+            //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
+            Statement stmt = conn.createStatement();
+
+            //Create a placeholder for the results from a given select query
+            ResultSet rs;   
+
+            sqlStatementHandler ssh = new sqlStatementHandler();
+
+            //Build out the testing suite and run the required tests
+            rs = stmt.executeQuery(ssh.reqUserInfo());
+
+            //Not necessary for methods that will not be returning anything
+            while(rs.next()){
+                //Any returning statements go here
+            }
+
+            //Close the connection for network security and bandwith reduction
+            conn.close();
+        }catch(Exception e){
+            System.out.println("Error in creating a new user");
+            System.out.println(e);
+        }
     }
 
     /**
@@ -125,8 +226,33 @@ class Driver{
      * to the client. Utilizes the sqlStatementHandler class for assistance with creating the
      * statement.
      */
-    public void callAssetList(){
+    public void callAssetList(AssetRequest<?> incomingRequest){
+        try{
+            //Establish a connection with the specific database
+            Connection conn = DriverManager.getConnection(servURL);
 
+            //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
+            Statement stmt = conn.createStatement();
+
+            //Create a placeholder for the results from a given select query
+            ResultSet rs;   
+
+            sqlStatementHandler ssh = new sqlStatementHandler();
+
+            //Build out the testing suite and run the required tests
+            rs = stmt.executeQuery(ssh.reqAssetList());
+
+            //Not necessary for methods that will not be returning anything
+            while(rs.next()){
+                //Any returning statements go here
+            }
+
+            //Close the connection for network security and bandwith reduction
+            conn.close();
+        }catch(Exception e){
+            System.out.println("Error in creating a new user");
+            System.out.println(e);
+        }
     }
 
     /**
@@ -135,7 +261,32 @@ class Driver{
      * to the clent. Utilizes the sqlStatementHandler class for assistance with creating the
      * statement.
      */
-    public void callUserList(){
+    public void callUserList(AssetRequest<?> incomingRequest){
+        try{
+            //Establish a connection with the specific database
+            Connection conn = DriverManager.getConnection(servURL);
 
+            //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
+            Statement stmt = conn.createStatement();
+
+            //Create a placeholder for the results from a given select query
+            ResultSet rs;   
+
+            sqlStatementHandler ssh = new sqlStatementHandler();
+
+            //Build out the testing suite and run the required tests
+            rs = stmt.executeQuery(ssh.reqUserInfo());
+
+            //Not necessary for methods that will not be returning anything
+            while(rs.next()){
+                //Any returning statements go here
+            }
+
+            //Close the connection for network security and bandwith reduction
+            conn.close();
+        }catch(Exception e){
+            System.out.println("Error in creating a new user");
+            System.out.println(e);
+        }
     }
 }
