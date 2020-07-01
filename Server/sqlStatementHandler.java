@@ -1,3 +1,4 @@
+package Server;
 //TODO: ALL METHODS ARE STUBS. Methods needs to be fully flushed out and created based on information provided and needed SQL statements
 
             //For Reference -> View SQL Textbook

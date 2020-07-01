@@ -1,3 +1,4 @@
+package Server;
 import java.io.Serializable;
 
 public class AssetRequest<E extends Serializable> implements Serializable{
