@@ -79,4 +79,62 @@ class Driver{
             System.exit(0);
         }
     }
+
+    /**
+     * Sends a SQL statement to the virtual server stating that a new User with specific sets
+     * of data is being created. Utilizes the sqlStatementHandler class for assistance with
+     * creating the statement.
+     */
+    public void createNewUser(){
+
+    }
+
+    /**
+     * Sends a SQL statement to the virtual server stating that a new Asset with specific sets
+     * of data is being created. Utilizes the sqlStatementHandler class for assistance with
+     * creating the statement.
+     */
+    public void createNewAsset(){
+
+    }
+
+    /**
+     * Sends a SQL statement to the virtual server stating that a client needs to view data on
+     * a specific asset. The statement will retrieve the data on said asset and then provide it 
+     * to the client. Utilizes the sqlStatementHandler class for assistance with creating the 
+     * statement.
+     */
+    public void callAsset(){
+
+    }
+
+    /**
+     * Sends a SQL statement to the virtual server stating that a client needs to view data on
+     * a specific user. The statement will retrieve the data on said asset and then provide it 
+     * to the client. Utilizes the sqlStatementHandler class for assistance with creating the 
+     * statement.
+     */
+    public void callUser(){
+
+    }
+
+    /**
+     * Sends a SQL statemnet to the virtual server stating that a client needs to view a list
+     * of all assests. The statement will retrieve the data on all assets and then provide it
+     * to the client. Utilizes the sqlStatementHandler class for assistance with creating the
+     * statement.
+     */
+    public void callAssetList(){
+
+    }
+
+    /**
+     * Sends a SQL statment to the virtual server stating that a client needs to view a list
+     * of all users. The statement will retriece the data on all users and then provide it 
+     * to the clent. Utilizes the sqlStatementHandler class for assistance with creating the
+     * statement.
+     */
+    public void callUserList(){
+
+    }
 }

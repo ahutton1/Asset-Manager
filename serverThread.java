@@ -23,12 +23,33 @@ public class serverThread extends AssetConnection{
 
                 //Determine what the request is asking for/wants/is telling the client
                 switch(request.getType()){
+                    case LOGIN:
+                        break;
                     case LOGIN_SUCCEEDED:
+                        //Sent by server. Should not be received here
                         goodToGo = true;
                         break;
                     case PUSH_UPDATE:
+                        //Sent by server. Should not be received here
+                        break;
+                    case LOGOUT:
                         break;
                     case ERROR:
+                        //Sent by server. Should not be received here
+                        break;
+                    case USER_ERROR:
+                        break;
+                    case NEW_ASSET:
+                        break;
+                    case NEW_USER:
+                        break;
+                    case CALL_ASSET:
+                        break;
+                    case CALL_USER:
+                        break;
+                    case CALL_ASSET_LIST:
+                        break;
+                    case CALL_USER_LIST:
                         break;
                     default:
                         throw new Exception("Error reading request from server");
