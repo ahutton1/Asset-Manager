@@ -2,6 +2,8 @@ package DisplayObjects;
 
 import java.util.ArrayList;
 
+import Server.search;
+
 public class sqlList {
 
     public enum searchType{
@@ -76,10 +78,20 @@ public class sqlList {
         this.searchTermOne = steo;
     }
 
+        //Getters
+        public searchType getFirstType(){return searchTypeOne;}
+
+        public String getFirstTerm(){return searchTermOne;}
+
     //Sets the second search term and type
     public void setSecond(searchType styt, String stet){
         this.searchTypeTwo = styt;
         this.searchTermTwo = stet;
     }
+
+        //Getters
+        public searchType getSecondType(){return searchTypeTwo;}
+
+        public String getSecondTerm(){return searchTermTwo;}
     
 }

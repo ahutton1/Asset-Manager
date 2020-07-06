@@ -1,7 +1,9 @@
 package Server;
 //TODO: ALL METHODS ARE STUBS. Methods needs to be fully flushed out and created based on information provided and needed SQL statements
 
-            //For Reference -> View SQL Textbook
+import DisplayObjects.sqlList;
+
+//For Reference -> View SQL Textbook
 
 /**
  * Helper class that assists in the formatting of SQL statements to and from the server as clients connect and
@@ -15,7 +17,7 @@ public class sqlStatementHandler {
      * added to the tables.
      * @return true or false depending on whether the message was sent successfully
      */
-    public String reqNewAsset(){
+    public String reqNewAsset(AssetRequest<?> request){
         return "NULL";
     }
 
@@ -25,7 +27,7 @@ public class sqlStatementHandler {
      * CRITICALITY)
      * @return true or false depending on whether the message was sent successfully
      */
-    public String reqNewUser(){
+    public String reqNewUser(AssetRequest<?> request){
         return "NULL";
     }
 
@@ -35,10 +37,51 @@ public class sqlStatementHandler {
      * time.
      * @return true or false depending on whether the message was sent successfully
      */
-    public String reqAssetList(){
+    public String reqAssetList(AssetRequest<?> request){
         String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID FROM tblAssets";
-        
+        sqlList incomingData = (sqlList)request.getData();
+        if(incomingData.getFirstType().equals(sqlList.searchType.BASIC)){
+            //No filter or search term is applied, so just send the most basic data of everything
+            return sqlStatement;
+        }
+        switch(incomingData.getFirstType()){
+            case BASIC:
+                break;
+            case ASSET_NAME:
+                sqlStatement = (sqlStatement + " WHERE Asset_Name IS EQUAL " + incomingData.getFirstTerm());
+                break;
+            case ASSET_ID:
+                sqlStatement = (sqlStatement + " WHERE AssetID IS EQUAL " + incomingData.getFirstTerm());
+                break;
+            case ASSET_TYPE:
+                sqlStatement = (sqlStatement + " WHERE AssetTypeID IS EQUAL " + findEquivID(incomingData.getFirstTerm()));
+                break;
+            case ASSET_USER:
+                //TODO Find or make the asset user column
+                sqlStatement = (sqlStatement + " WHERE _ IS EQUAL " + incomingData.getFirstTerm());
+                break;
+            case ASSET_STAT_TYPE:
+                //TODO devolp inventory status term to ID method
+                sqlStatement = (sqlStatement + " WHERE Inventory_StatusID IS EQUAL " + incomingData.getFirstTerm());
+                break;
+            case ASSET_PHONE_NUMBER:
+                sqlStatement = (sqlStatement + " WHERE Phone_Number IS EQUAL " + incomingData.getFirstTerm());
+                break;
+            default:
+                System.err.println("Error in reading data type for asset list in translator");
+                break;
+        }
+
         return sqlStatement;
+    }
+
+    /**
+     * Finds and returns the ID equialent of the search term that was inputted by the user for the asset type TODO
+     * @param searchTerm
+     * @return
+     */
+    private int findEquivID(String searchTerm){
+        return 0;
     }
 
     /**
@@ -46,7 +89,7 @@ public class sqlStatementHandler {
      * stored in the tables, based on what search conditions a user has on at any given time.
      * @return true or false depending on whether the message was sent successfully
      */
-    public String reqUserList(){
+    public String reqUserList(AssetRequest<?> request){
         return "NULL";
     }
 
@@ -56,7 +99,7 @@ public class sqlStatementHandler {
      * on the right hand side of the application screen.
      * @return true or false depending on whether the message was sent successfully
      */
-    public String reqUserInfo(){
+    public String reqUserInfo(AssetRequest<?> request){
         return "NULL";
     }
 
@@ -66,7 +109,7 @@ public class sqlStatementHandler {
      * panel on the right hand side of the application screen
      * @return true or false depending on whether the message was sent successfully
      */
-    public String reqAssetInfo(){
+    public String reqAssetInfo(AssetRequest<?> request){
         return "NULL";
     }
     

@@ -103,7 +103,7 @@ class Driver{
             sqlStatementHandler ssh = new sqlStatementHandler();
 
             //Build out the testing suite and run the required tests
-            rs = stmt.executeQuery(ssh.reqNewUser());
+            rs = stmt.executeQuery(ssh.reqNewUser(incomingRequest));
 
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
@@ -137,7 +137,7 @@ class Driver{
             sqlStatementHandler ssh = new sqlStatementHandler();
 
             //Build out the testing suite and run the required tests
-            rs = stmt.executeQuery(ssh.reqNewAsset());
+            rs = stmt.executeQuery(ssh.reqNewAsset(incomingRequest));
 
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
@@ -172,7 +172,7 @@ class Driver{
             sqlStatementHandler ssh = new sqlStatementHandler();
 
             //Build out the testing suite and run the required tests
-            rs = stmt.executeQuery(ssh.reqAssetInfo());
+            rs = stmt.executeQuery(ssh.reqAssetInfo(incomingRequest));
 
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
@@ -207,7 +207,7 @@ class Driver{
             sqlStatementHandler ssh = new sqlStatementHandler();
 
             //Build out the testing suite and run the required tests
-            rs = stmt.executeQuery(ssh.reqUserInfo());
+            rs = stmt.executeQuery(ssh.reqUserInfo(incomingRequest));
 
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
@@ -242,7 +242,7 @@ class Driver{
             sqlStatementHandler ssh = new sqlStatementHandler();
 
             //Build out the testing suite and run the required tests
-            rs = stmt.executeQuery(ssh.reqAssetList());
+            rs = stmt.executeQuery(ssh.reqAssetList(incomingRequest));
 
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
@@ -277,7 +277,7 @@ class Driver{
             sqlStatementHandler ssh = new sqlStatementHandler();
 
             //Build out the testing suite and run the required tests
-            rs = stmt.executeQuery(ssh.reqUserInfo());
+            rs = stmt.executeQuery(ssh.reqUserInfo(incomingRequest));
 
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
