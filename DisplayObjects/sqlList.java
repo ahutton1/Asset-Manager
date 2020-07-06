@@ -69,5 +69,17 @@ public class sqlList {
 
     //Adds an asset to the asset list
     public void addAsset(Asset asset){assetList.add(asset);}
+
+    //Sets the first search term and type
+    public void setFirst(searchType styo, String steo){
+        this.searchTypeOne = styo;
+        this.searchTermOne = steo;
+    }
+
+    //Sets the second search term and type
+    public void setSecond(searchType styt, String stet){
+        this.searchTypeTwo = styt;
+        this.searchTermTwo = stet;
+    }
     
 }

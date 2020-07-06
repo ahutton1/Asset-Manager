@@ -36,7 +36,9 @@ public class sqlStatementHandler {
      * @return true or false depending on whether the message was sent successfully
      */
     public String reqAssetList(){
-        return "NULL";
+        String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID FROM tblAssets";
+        
+        return sqlStatement;
     }
 
     /**

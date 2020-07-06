@@ -22,7 +22,7 @@ public class serverThread extends AssetConnection{
                 //Recognize and pull incoming request from the server
                 AssetRequest<?> request = readRequest();
 
-                /** TODO: Devleop returns on each case that sends the useror asset data back to the client GUI */
+                /** TODO: Develop returns on each case that sends the useror asset data back to the client GUI */
                 //Determine what the request is asking for/wants/is telling the client
                 switch(request.getType()){
                     case LOGIN:

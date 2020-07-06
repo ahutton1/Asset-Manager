@@ -32,10 +32,12 @@ class Driver{
             ResultSet rs;   
 
             //Build out the testing suite and run the required tests
-            rs = stmt.executeQuery("SELECT AssetID FROM tblAssets");
+            rs = stmt.executeQuery("SELECT Asset_Name, AssetID, Asset_TypeID FROM tblAssets");
             while(rs.next()){
+                String Asset_Name = rs.getString("Asset_Name");
                 int assetID = rs.getInt("AssetID");
-                System.out.println(assetID);
+                int asset_typeID = rs.getInt("Asset_TypeID");
+                System.out.println(Asset_Name + "   " + assetID + "   " + asset_typeID);
             }
             conn.close();
 
@@ -53,8 +55,8 @@ class Driver{
         }
 
         //Outside of testing suite: begin programming of actual server
-        int portNumber = 0;
-        Driver serverDriver = new Driver(portNumber);
+        //int portNumber = 0;
+        //Driver serverDriver = new Driver(portNumber);
 
     }
 
