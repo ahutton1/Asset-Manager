@@ -12,7 +12,7 @@ public abstract class AssetConnection extends Thread {
     protected ObjectOutputStream out;
     protected ObjectInputStream in;
     private boolean open;
-    protected final int SLEPP_MS = 100;
+    protected final int SLEEP_MS = 100;
 
     public AssetConnection(Socket socket) throws IOException{
         this.socket = socket;

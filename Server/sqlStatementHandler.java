@@ -18,7 +18,11 @@ public class sqlStatementHandler {
      * @return true or false depending on whether the message was sent successfully
      */
     public String reqNewAsset(AssetRequest<?> request){
-        return "NULL";
+        String sqlStatement = "INSERT INTO tblAssets VALUES (";
+
+        //TODO - Determine the best way to insert things. Most likely all at once after a save icon is selected
+
+        return sqlStatement;
     }
 
     /**
@@ -28,6 +32,10 @@ public class sqlStatementHandler {
      * @return true or false depending on whether the message was sent successfully
      */
     public String reqNewUser(AssetRequest<?> request){
+        String sqlStatement = "INSERT INTO _ VALUES (";
+
+        //TODO - Import the user table. Find out how ADUC interacts with SQL Server
+
         return "NULL";
     }
 
@@ -57,11 +65,9 @@ public class sqlStatementHandler {
                 sqlStatement = (sqlStatement + " WHERE AssetTypeID IN (" + findEquivID(incomingData.getFirstTerm()) + ")");
                 break;
             case ASSET_USER:
-                //TODO Find or make the asset user column
                 sqlStatement = (sqlStatement + " WHERE _ IN (" + incomingData.getFirstTerm() + ")");
                 break;
             case ASSET_STAT_TYPE:
-                //TODO devolp inventory status term to ID method
                 sqlStatement = (sqlStatement + " WHERE Inventory_StatusID IN (" + invStatToID(incomingData.getFirstTerm()) + ")");
                 break;
             case ASSET_PHONE_NUMBER:
@@ -76,11 +82,14 @@ public class sqlStatementHandler {
     }
 
     /**
-     * Finds and returns the ID equivalent of the search term that was inputted by the user for the asset type TODO
+     * Finds and returns the ID equivalent of the search term that was inputted by the user for the asset type
      *      3 - Desktop
      *      4 - Laptop
      *      9 - Aircard
      *      1 - Hotspot
+     * Guaranteed 'equals' with toLowerCase() method. The user must type the search term in correctly if the results are going
+     * to pop up. Any misspelling will cause the program to send a zero in as the asset type ID, showing no results. The 
+     * program will not crash because of this though
      * @param searchTerm : String that is inputted by the user as a searching mechanism to find a certain type
      *                     of asset
      * @return int that represents an asset type
@@ -110,7 +119,7 @@ public class sqlStatementHandler {
     }
 
     /**
-     * Finds and returns the ID equivalent of the search term that was inputted by the user for the inventory status TODO
+     * Finds and returns the ID equivalent of the search term that was inputted by the user for the inventory status
      *      1 - In inventory
      *      2 - Assigned
      *      3 - Retired
@@ -118,6 +127,9 @@ public class sqlStatementHandler {
      *      5 - Loaned
      *      7 - Lost/Stolen
      *      8 - Damaged
+     * Guaranteed 'equals' with toLowerCase() method. The user must type the search term in correctly if the results are going
+     * to pop up. Any misspelling will cause the program to send a zero in as the inventory status ID, showing no results. The 
+     * program will not crash because of this though
      * @param searchTerm
      * @return
      */
@@ -181,8 +193,12 @@ public class sqlStatementHandler {
      * on the right hand side of the application screen.
      * @return true or false depending on whether the message was sent successfully
      */
-    public String reqUserInfo(AssetRequest<?> request){
-        return "NULL";
+    public String reqUserInfo(search request){          //TODO
+        String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmpNo, drvEmplStatus, ___ FROM _ WHERE (drvNameLast IN " + request.userLast + ") AND (drvNameFirst IN " + request.userFirst +") AND (drvEmplStatus IN " + request.empStat + ")";
+
+        //TODO - Determine what information about the user should be shown in the content pane
+
+        return sqlStatement;
     }
 
     /**
@@ -191,7 +207,7 @@ public class sqlStatementHandler {
      * panel on the right hand side of the application screen
      * @return true or false depending on whether the message was sent successfully
      */
-    public String reqAssetInfo(search request){
+    public String reqAssetInfo(search request){         //TODO
         String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID, Inventory_StatusID, VendorID, Model, Serial FROM tblAssets WHERE (Asset_Name IN " + request.assetName + ") AND (AssetID IN " + request.assetID + ") AND (Asset_TypeID IN " + request.typeID + ")";
         return sqlStatement;
     }

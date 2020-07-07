@@ -18,6 +18,7 @@ public class GUIController {
     private JPanel navPanel;
     private JPanel searchPanel;
     private JPanel listPanel;
+    private JPanel searchListJointPanel;
     private JPanel contentPanel;
 
     /**
@@ -27,7 +28,7 @@ public class GUIController {
     private JButton newAssetBtn;
     private JButton usersBtn;
     private JButton newUserBtn;
-    private JButton saveBtn;        //Could potentially be unnecessary
+    private JButton saveBtn;        //Could potentially be unnecessary - Send to new user/asset page
 
     /**
      * Search Panel Contents - Assets
@@ -97,6 +98,7 @@ public class GUIController {
      */
     private Dimension navDims;
     private Dimension searchButtonDims;
+    private Dimension listPanelDims;
 
     /**
      * Testing suite used to test out the GUI without having to initialize client
@@ -173,9 +175,26 @@ public class GUIController {
             button_container.add(asset_search_assetType);
             button_container.add(asset_search_model);
             button_container.add(asset_search_phoneNumber);
-            window.getContentPane().add(button_container);
+            //window.getContentPane().add(button_container);
 
         //List panel initialization
+        listPanelDims = new Dimension((int)screenSize.getWidth()/3, (int)screenSize.getHeight()/10*8);
+        listPanel = new JPanel();
+        listPanel.setBackground(Color.GREEN);
+        contentScroller = new JScrollPane();
+        listPanel.setPreferredSize(listPanelDims);
+        listPanel.add(contentScroller);
+        //window.add(listPanel);
+
+        /**
+         * TESTING
+         */
+        searchListJointPanel = new JPanel();
+        Dimension sljpDims = new Dimension((int)screenSize.getWidth()/3,(int)screenSize.getHeight()/10*9);
+        searchListJointPanel.setPreferredSize(sljpDims);
+        searchListJointPanel.add(button_container);
+        searchListJointPanel.add(listPanel);
+        window.add(searchListJointPanel);
 
         //Content panel initialization
 
