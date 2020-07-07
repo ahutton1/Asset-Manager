@@ -151,9 +151,9 @@ public class GUIController {
             asset_search.add(asset_search_model);
             asset_search.add(asset_search_phoneNumber);
 
-        user_search_firstName = new JRadioButton();
-        user_search_lastName = new JRadioButton();
-        user_search_empStat = new JRadioButton();
+        user_search_firstName = new JRadioButton("First Name");
+        user_search_lastName = new JRadioButton("Last Name");
+        user_search_empStat = new JRadioButton("Employment Status");
 
         user_search = new ButtonGroup();
             user_search.add(user_search_firstName);
