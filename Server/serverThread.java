@@ -39,6 +39,7 @@ public class serverThread extends AssetConnection{
                         break;
                     case ERROR:
                         //Sent by server. Should not be received here
+                        goodToGo = false;
                         break;
                     case USER_ERROR:
                         break;

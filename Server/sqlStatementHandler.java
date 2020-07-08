@@ -15,7 +15,7 @@ public class sqlStatementHandler {
     /**
      * Method that sends a SQL statement to the SQL virtual server requesting that a new asset be created and 
      * added to the tables.
-     * @return true or false depending on whether the message was sent successfully
+     * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
      */
     public String reqNewAsset(AssetRequest<?> request){
         String sqlStatement = "INSERT INTO tblAssets VALUES (";
@@ -29,12 +29,13 @@ public class sqlStatementHandler {
      * Method that sends a SQL statement to the SQL virtual server requesting that a new user be created and 
      * added to the tables. Important note* -> Look into how ADUC could potentially have new users added (LOW 
      * CRITICALITY)
-     * @return true or false depending on whether the message was sent successfully
+     * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
      */
     public String reqNewUser(AssetRequest<?> request){
         String sqlStatement = "INSERT INTO _ VALUES (";
 
-        //TODO - Import the user table. Find out how ADUC interacts with SQL Server
+        //TODO - Import the user table. Find out how ADUC interacts with SQL Server. Need to check both tblUsers and tblUsers_NonUP.
+        //       Most likely will be importing to tblUsers_NonUP as anything else would be manually placed in ADUC
 
         return "NULL";
     }
@@ -43,7 +44,7 @@ public class sqlStatementHandler {
      * Method that sends a SQL statement to the SQL virtual server requesting the entire list of assets that
      * is stored in the tables, based on which search filter or term combination and a user has on at any given
      * time.
-     * @return true or false depending on whether the message was sent successfully
+     * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
      */
     public String reqAssetList(AssetRequest<?> request){
         String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID FROM tblAssets";
@@ -173,28 +174,57 @@ public class sqlStatementHandler {
     }
 
     /**
-     * Method that sends a SQL statement to the SQL virtual server requesting the entire list of useres that is
+     * Method that sends a SQL statement to the SQL virtual server requesting the entire list of users that is
      * stored in the tables, based on what search conditions a user has on at any given time.
-     * @return true or false depending on whether the message was sent successfully
+     * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
      */
     public String reqUserList(AssetRequest<?> request){
-        String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID FROM tblAssets";
+        //TODO: Include joint searching of both the tblUsers and tblUsers_NonUP tables
+        String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmplStatus FROM tblUsers, tblUsers_NonUP";
         sqlList incomingData = (sqlList)request.getData();
         if(incomingData.getFirstType().equals(sqlList.searchType.BASIC)){
             //No filter or search term is applied, so just send the most basic data of everything
             return sqlStatement;
         }
-        return "NULL";
+        switch(incomingData.getFirstType()){
+            case USER_FIRST:
+                sqlStatement = (sqlStatement + " WHERE drvNameFirst IN (" + handleName(incomingData.getFirstTerm()) + ")");
+                break;
+            case USER_LAST:
+                sqlStatement = (sqlStatement + " WHERE drvNameLast IN (" + handleName(incomingData.getFirstTerm()) + ")");
+                break;
+            case USER_STAT:
+                sqlStatement = (sqlStatement + " WHERE drvEmplStatus IN (" + incomingData.getFirstTerm() + ")");
+                break;
+            default:
+                break;
+        }
+        return sqlStatement;
+    }
+
+    /**
+     * Small helper class that is used to correct any string's capitalization to how a name would be spelled
+     * and capitalized. It takes the string, sends everything to lowercase, then sends the first letter to 
+     * uppercase, then returns.
+     * @param name : The name that is being handled as a safety precaution so that all searches can run without
+     *               issue.
+     * @return The string in name-style capitalization.
+     */
+    private String handleName(String name){
+        name = name.toLowerCase();
+        name = name.substring(0,1).toUpperCase() + name.substring(1);
+        return name;
     }
 
     /**
      * Method that sends a SQL statement to the SQL virtual server requesting all of the information regarding
      * a singular given user. That users' information is to be displayed in the main information display panel
      * on the right hand side of the application screen.
-     * @return true or false depending on whether the message was sent successfully
+     * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
      */
-    public String reqUserInfo(search request){          //TODO
-        String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmpNo, drvEmplStatus, ___ FROM _ WHERE (drvNameLast IN " + request.userLast + ") AND (drvNameFirst IN " + request.userFirst +") AND (drvEmplStatus IN " + request.empStat + ")";
+    public String reqUserInfo(AssetRequest<?> request){          //TODO
+        search req = (search)request.getData();
+        String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmpNo, drvEmplStatus, ___ FROM tblUsers, tblUsers_NonUP WHERE (drvNameLast IN " + req.userLast + ") AND (drvNameFirst IN " + req.userFirst +") AND (drvEmplStatus IN " + req.empStat + ")";
 
         //TODO - Determine what information about the user should be shown in the content pane
 
@@ -205,10 +235,11 @@ public class sqlStatementHandler {
      * Method that sends a SQL statement to the SQL virtual server requesting all of the information regarding
      * a singular given asset. That asset's information is to be displayed in the main information display 
      * panel on the right hand side of the application screen
-     * @return true or false depending on whether the message was sent successfully
+     * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
      */
-    public String reqAssetInfo(search request){         //TODO
-        String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID, Inventory_StatusID, VendorID, Model, Serial FROM tblAssets WHERE (Asset_Name IN " + request.assetName + ") AND (AssetID IN " + request.assetID + ") AND (Asset_TypeID IN " + request.typeID + ")";
+    public String reqAssetInfo(AssetRequest<?> request){
+        search req = (search)request.getData();
+        String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID, Inventory_StatusID, VendorID, Model, Serial FROM tblAssets WHERE (Asset_Name IN " + req.assetName + ") AND (AssetID IN " + req.assetID + ") AND (Asset_TypeID IN " + req.typeID + ")";
         return sqlStatement;
     }
     

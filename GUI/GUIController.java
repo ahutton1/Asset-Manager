@@ -2,6 +2,7 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import enums.assetTypes;
 import enums.employmentStatus;
 import enums.statusTypes;
@@ -13,7 +14,6 @@ public class GUIController {
      * Overarching structure
      */
     private int GUIstate;
-    private View v;
     private JFrame window;
     private JPanel navPanel;
     private JPanel searchPanel;
@@ -111,7 +111,6 @@ public class GUIController {
     }
 
     public void initialize(){
-        v = new View();
         window = new JFrame();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         window.setSize(screenSize.width, screenSize.height);
@@ -121,14 +120,21 @@ public class GUIController {
 
         //Navigation panel initialization
         assetsBtn = new JButton("Assets");
+            assetsBtn.setActionCommand("assetsBtn_viewAssetListBtn");
+            assetsBtn.addActionListener(new ButtonClickListener());
         newAssetBtn = new JButton("New Asset");
+            newAssetBtn.setActionCommand("newAssetBtn_createNewAssetBtn");
+            newAssetBtn.addActionListener(new ButtonClickListener());
         usersBtn = new JButton("Users");
+            usersBtn.setActionCommand("usersBtn_viewUserListBtn");
+            usersBtn.addActionListener(new ButtonClickListener());
         newUserBtn = new JButton("New User");
-        saveBtn = new JButton("Save");          //May not be necessary, but initialization is still included just in case
+            newUserBtn.setActionCommand("newUserBtn_createNewuserBtn");
+            newUserBtn.addActionListener(new ButtonClickListener());
+        //saveBtn = new JButton("Save");          //May not be necessary, but initialization is still included just in case
         navBarLayout = new FlowLayout(FlowLayout.LEFT);
         navPanel = new JPanel();
-        //navPanel.setSize((int)screenSize.getWidth(),(int)screenSize.getHeight()/6);
-        navDims = new Dimension((int)screenSize.getWidth(),(int)screenSize.getHeight()/10);
+        navDims = new Dimension((int)screenSize.getWidth()-25,(int)screenSize.getHeight()/10);
         navPanel.setPreferredSize(navDims);
         navPanel.setLayout(navBarLayout);
         navPanel.setBackground(Color.RED);
@@ -141,10 +147,20 @@ public class GUIController {
 
         //Search panel initialization
         asset_search_compName = new JRadioButton("Computer Name");
+            asset_search_compName.setActionCommand("asset_search_compName_radBtn");
+            asset_search_compName.addActionListener(new ButtonClickListener());
         asset_search_assetNumber = new JRadioButton("Asset Number");
+            asset_search_assetNumber.setActionCommand("asset_search_assetNumber_radBtn");
+            asset_search_assetNumber.addActionListener(new ButtonClickListener());
         asset_search_assetType = new JRadioButton("Asset Type");
+            asset_search_assetType.setActionCommand("asset_search_assetType_radBtn");
+            asset_search_assetType.addActionListener(new ButtonClickListener());
         asset_search_model = new JRadioButton("Model");
+            asset_search_model.setActionCommand("asset_search_model_radBtn");
+            asset_search_model.addActionListener(new ButtonClickListener());
         asset_search_phoneNumber = new JRadioButton("Phone Number");
+            asset_search_phoneNumber.setActionCommand("asset_search_phoneNumber_radBtn");
+            asset_search_phoneNumber.addActionListener(new ButtonClickListener());
 
         asset_search = new ButtonGroup();
             asset_search.add(asset_search_compName);
@@ -165,7 +181,7 @@ public class GUIController {
         current_group = new ButtonGroup();
         current_group = asset_search;
         button_container = new JPanel();
-        searchButtonDims = new Dimension((int)screenSize.getWidth()/3,(int)screenSize.getHeight()/10);
+        searchButtonDims = new Dimension((int)screenSize.getWidth()/3-30,(int)screenSize.getHeight()/10);
         button_container.setPreferredSize(searchButtonDims);
         radioButtonLayout = new FlowLayout(FlowLayout.LEFT);
         button_container.setLayout(radioButtonLayout);
@@ -178,10 +194,12 @@ public class GUIController {
             //window.getContentPane().add(button_container);
 
         //List panel initialization
-        listPanelDims = new Dimension((int)screenSize.getWidth()/3, (int)screenSize.getHeight()/10*8);
+        listPanelDims = new Dimension((int)screenSize.getWidth()/3-30, (int)screenSize.getHeight()/10*8);
         listPanel = new JPanel();
         listPanel.setBackground(Color.GREEN);
         contentScroller = new JScrollPane();
+        Dimension scrollingAreaDims = new Dimension((int)screenSize.getWidth()/3-60,(int)screenSize.getHeight()/10*8-30);
+        contentScroller.setPreferredSize(scrollingAreaDims);
         listPanel.setPreferredSize(listPanelDims);
         listPanel.add(contentScroller);
         //window.add(listPanel);
@@ -190,15 +208,37 @@ public class GUIController {
          * TESTING
          */
         searchListJointPanel = new JPanel();
-        Dimension sljpDims = new Dimension((int)screenSize.getWidth()/3,(int)screenSize.getHeight()/10*9);
+        Dimension sljpDims = new Dimension((int)screenSize.getWidth()/3-30,(int)screenSize.getHeight()/10*9);
         searchListJointPanel.setPreferredSize(sljpDims);
         searchListJointPanel.add(button_container);
         searchListJointPanel.add(listPanel);
         window.add(searchListJointPanel);
 
         //Content panel initialization
+        contentPanel = new JPanel();
+        Dimension contentDims = new Dimension((int)screenSize.getWidth()/3*2,(int)screenSize.getHeight()/10*9);
+        contentPanel.setPreferredSize(contentDims);
+        contentPanel.setBackground(Color.YELLOW);
+        window.add(contentPanel);
 
         window.setVisible(true);
     }
-    
+ 
+    /**
+     * Handles all user-initiated events that occur on the GUI
+     */
+    private class ButtonClickListener implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String command = e.getActionCommand();
+            switch(command){
+                default:
+                System.out.println(command);
+                    break;
+            }
+        }
+
+    }
+
 }

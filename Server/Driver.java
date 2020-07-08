@@ -171,11 +171,8 @@ class Driver{
 
             sqlStatementHandler ssh = new sqlStatementHandler();
 
-            //TODO: PLACEHOLDER. Replace with actual call
-            search search = new search("",0,0);
-
             //Build out the testing suite and run the required tests
-            rs = stmt.executeQuery(ssh.reqAssetInfo(search));
+            rs = stmt.executeQuery(ssh.reqAssetInfo(incomingRequest));
 
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
