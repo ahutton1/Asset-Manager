@@ -129,7 +129,7 @@ public class GUIController {
             usersBtn.setActionCommand("usersBtn_viewUserListBtn");
             usersBtn.addActionListener(new ButtonClickListener());
         newUserBtn = new JButton("New User");
-            newUserBtn.setActionCommand("newUserBtn_createNewuserBtn");
+            newUserBtn.setActionCommand("newUserBtn_createNewUserBtn");
             newUserBtn.addActionListener(new ButtonClickListener());
         //saveBtn = new JButton("Save");          //May not be necessary, but initialization is still included just in case
         navBarLayout = new FlowLayout(FlowLayout.LEFT);
@@ -170,8 +170,14 @@ public class GUIController {
             asset_search.add(asset_search_phoneNumber);
 
         user_search_firstName = new JRadioButton("First Name");
+            user_search_firstName.setActionCommand("user_search_firstName_radBtn");
+            user_search_firstName.addActionListener(new ButtonClickListener());
         user_search_lastName = new JRadioButton("Last Name");
+            user_search_lastName.setActionCommand("user_search_lastName_radBtn");
+            user_search_lastName.addActionListener(new ButtonClickListener());
         user_search_empStat = new JRadioButton("Employment Status");
+            user_search_empStat.setActionCommand("user_search_empStat_radBtn");
+            user_search_empStat.addActionListener(new ButtonClickListener());
 
         user_search = new ButtonGroup();
             user_search.add(user_search_firstName);
@@ -223,6 +229,50 @@ public class GUIController {
 
         window.setVisible(true);
     }
+
+    /**
+     * Used to switch which radio buttons are being shown on the screen
+     */
+    private void switchActiveSearchingGroup(String command){
+        if(current_group.equals(asset_search)){
+            if(command.equals("assetsBtn_viewAssetListBtn")){
+                //Do nothing
+            }else{
+                button_container.remove(asset_search_assetNumber);
+                button_container.remove(asset_search_assetType);
+                button_container.remove(asset_search_compName);
+                button_container.remove(asset_search_model);
+                button_container.remove(asset_search_phoneNumber);
+
+                button_container.add(user_search_firstName);
+                button_container.add(user_search_lastName);
+                button_container.add(user_search_empStat);
+
+                button_container.revalidate();
+                button_container.repaint();
+                //window.repaint();
+            }
+        }else{
+            if(command.equals("usersBtn_viewUserListBtn")){
+                //Do nothing
+            }else{
+                button_container.remove(user_search_firstName);
+                button_container.remove(user_search_lastName);
+                button_container.remove(user_search_empStat);
+
+                button_container.add(asset_search_compName);
+                button_container.add(asset_search_assetNumber);
+                button_container.add(asset_search_assetType);
+                button_container.add(asset_search_model);
+                button_container.add(asset_search_phoneNumber);
+
+                button_container.revalidate();
+                button_container.repaint();
+                //window.repaint();
+            }
+
+        }
+    }
  
     /**
      * Handles all user-initiated events that occur on the GUI
@@ -233,6 +283,46 @@ public class GUIController {
         public void actionPerformed(ActionEvent e) {
             String command = e.getActionCommand();
             switch(command){
+                case "assetsBtn_viewAssetListBtn":
+                    System.out.println("View Asset List Button Recognized");
+                    switchActiveSearchingGroup(command);
+                    current_group = asset_search;
+                    break;
+                case "newAssetBtn_createNewAssetBtn":
+                    System.out.println("Create New Asset Button Recognized");
+                    break;
+                case "usersBtn_viewUserListBtn":
+                    System.out.println("View User List Button Recognized");
+                    switchActiveSearchingGroup(command);
+                    current_group = user_search;
+                    break;
+                case "newUserBtn_createNewUserBtn":
+                    System.out.println("Create New User Button Recognized");
+                    break;
+                case "asset_search_compName_radBtn":
+                    System.out.println("Asset Computer Name Search Type Recognized");
+                    break;
+                case "asset_search_assetNumber_radBtn":
+                    System.out.println("Asset ID Number Search Type Recognized");
+                    break;
+                case "asset_search_assetType_radBtn":
+                    System.out.println("Asset Type Search Type Recognized");
+                    break;
+                case "asset_search_model_radBtn":
+                    System.out.println("Asset Model Search Type Recognized");
+                    break;
+                case "asset_search_phoneNumber_radBtn":
+                    System.out.println("Asset Phone Number Search Type Recognized");
+                    break;
+                case "user_search_firstName_radBtn":
+                    System.out.println("User First Name Search Type Recognized");
+                    break;
+                case "user_search_lastName_radBtn":
+                    System.out.println("User Last Name Search Type Recognized");
+                    break;
+                case "user_search_empStat_radBtn":
+                    System.out.println("User Employment Status Search Type Recognized");
+                    break;
                 default:
                 System.out.println(command);
                     break;
