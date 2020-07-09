@@ -29,5 +29,11 @@ public class Asset {
         this.invStat = invStat;
         this.user = user;
     }
+
+    public Asset(String assetname, int assetNumber, assetTypes assetType){
+        this.assetName = assetname;
+        this.assetType = assetType;
+        this.assetNumber = assetNumber;
+    }
     
 }

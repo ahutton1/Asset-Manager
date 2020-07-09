@@ -57,5 +57,19 @@ public abstract class AssetConnection extends Thread {
         }
         return new AssetRequest<Serializable>(AssetRequest.RequestType.USER_ERROR, "Error Reading Request.");
     }
+
+    /**
+     * Sends a request with given information 
+     * @param request : A request for a change with a given type and data
+     */
+    public void sendRequest(AssetRequest<?> request){
+        try{
+            out.writeUnshared(request);
+            out.flush();
+        }catch(Exception e){
+            System.out.println("Send Request Error");
+            System.out.println(e);
+        }
+    }
     
 }

@@ -1,10 +1,11 @@
 package DisplayObjects;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import Server.search;
 
-public class sqlList {
+public class sqlList implements Serializable{
 
     public enum searchType{
         //The first name of any given user
@@ -35,7 +36,10 @@ public class sqlList {
         ASSET_STAT_TYPE,
 
         //The employment status of any given user
-        USER_STAT
+        USER_STAT,
+
+        //The model of any given asset
+        ASSET_MODEL
     }
 
     //Lists to hold the users and assets that are being returned in the search functionality

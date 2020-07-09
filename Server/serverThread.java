@@ -1,7 +1,10 @@
 package Server;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+
+import DisplayObjects.sqlList;
 
 public class serverThread extends AssetConnection{
 
@@ -56,7 +59,8 @@ public class serverThread extends AssetConnection{
                         server.callUser(request);
                         break;
                     case CALL_ASSET_LIST:
-                        server.callAssetList(request);
+                        AssetRequest<sqlList> homebound = server.callAssetList(request);
+                        sendRequest(homebound);
                         break;
                     case CALL_USER_LIST:
                         server.callUserList(request);

@@ -1,14 +1,26 @@
 package GUI;
 
 import javax.swing.*;
+
+import Client.ClientDriver;
+import DisplayObjects.sqlList;
+import Server.AssetRequest;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Enumeration;
+
 import enums.assetTypes;
 import enums.employmentStatus;
 import enums.statusTypes;
 import enums.vendors;
 
 public class GUIController {
+
+    /**
+     * "Neural Networking" of the program
+     */
+    private ClientDriver clDr;
 
     /**
      * Overarching structure
@@ -103,11 +115,17 @@ public class GUIController {
     /**
      * Testing suite used to test out the GUI without having to initialize client
      * information or the remote server.
+     * 
      * @param args
+     * @throws Exception
      */
-    public static void main(String args[]){
-        GUIController guic = new GUIController();
+    public static void main(String args[]) throws Exception {
+        GUIController guic = new GUIController(new ClientDriver(54312));
         guic.initialize();
+    }
+
+    public GUIController(ClientDriver clDr){
+        this.clDr = clDr;
     }
 
     public void initialize(){
@@ -202,6 +220,8 @@ public class GUIController {
         //List panel initialization
         listPanelDims = new Dimension((int)screenSize.getWidth()/3-30, (int)screenSize.getHeight()/10*8);
         listPanel = new JPanel();
+        contents = new JList<String>();
+        //contents = populateList(contents);
         listPanel.setBackground(Color.GREEN);
         contentScroller = new JScrollPane();
         Dimension scrollingAreaDims = new Dimension((int)screenSize.getWidth()/3-60,(int)screenSize.getHeight()/10*8-30);
@@ -273,6 +293,10 @@ public class GUIController {
 
         }
     }
+
+    private JList<String> updateList(JList contents){
+        return contents;
+    }
  
     /**
      * Handles all user-initiated events that occur on the GUI
@@ -287,6 +311,11 @@ public class GUIController {
                     System.out.println("View Asset List Button Recognized");
                     switchActiveSearchingGroup(command);
                     current_group = asset_search;
+                    sqlList sqllist = new sqlList();
+                    sqllist = setActiveListType(sqllist);
+                    //TODO set the search term
+                    AssetRequest<sqlList> request = new AssetRequest<>(AssetRequest.RequestType.CALL_ASSET_LIST, sqllist);
+                    clDr.sendRequest(request);
                     break;
                 case "newAssetBtn_createNewAssetBtn":
                     System.out.println("Create New Asset Button Recognized");
@@ -329,6 +358,54 @@ public class GUIController {
             }
         }
 
+    }
+
+    /**
+     * Sets the active search type of the SQL List to whichever of the radio buttons is selected at that
+     * given time.
+     * @param sqllist
+     * @return
+     */
+    private sqlList setActiveListType(sqlList sqllist){
+        String activeButton = "";
+        for(Enumeration<AbstractButton> buttons = current_group.getElements(); buttons.hasMoreElements();){
+            AbstractButton button = buttons.nextElement();
+            if(button.isSelected()){
+                activeButton = button.getText();
+            }
+        }
+
+        switch(activeButton){
+            case "Computer Name":
+                sqllist.searchTypeOne = sqlList.searchType.ASSET_NAME;
+                break;
+            case "Asset Number":
+                sqllist.searchTypeOne = sqlList.searchType.ASSET_ID;
+                break;
+            case "Asset Type":
+                sqllist.searchTypeOne = sqlList.searchType.ASSET_TYPE;
+                break;
+            case "Model":
+                sqllist.searchTypeOne = sqlList.searchType.ASSET_MODEL;
+                break;
+            case "Phone Number":
+                sqllist.searchTypeOne = sqlList.searchType.ASSET_PHONE_NUMBER;
+                break;
+            case "First Name":
+                sqllist.searchTypeOne = sqlList.searchType.USER_FIRST;
+                break;
+            case "Last Name":
+                sqllist.searchTypeOne = sqlList.searchType.USER_LAST;
+                break;
+            case "Employment Status":
+                sqllist.searchTypeOne = sqlList.searchType.USER_STAT;
+                break;
+            default:
+                System.out.println("Error in how the system read which button is active for the list");
+                break;
+        }
+
+        return sqllist;
     }
 
 }

@@ -1,4 +1,5 @@
 package Server;
+
 import java.io.IOException;
 import java.lang.System.Logger;
 import java.net.InetAddress;
@@ -9,6 +10,10 @@ import java.util.ArrayList;
     Software created is for use by University of Rochester Medicine Home Care, and is not for outside use
 */
 import java.util.logging.FileHandler;
+
+import DisplayObjects.Asset;
+import DisplayObjects.sqlList;
+import enums.assetTypes;
 
 class Driver{
 
@@ -55,7 +60,7 @@ class Driver{
         }
 
         //Outside of testing suite: begin programming of actual server
-        //int portNumber = 0;
+        //int portNumber = 54312;
         //Driver serverDriver = new Driver(portNumber);
 
     }
@@ -228,7 +233,7 @@ class Driver{
      * to the client. Utilizes the sqlStatementHandler class for assistance with creating the
      * statement.
      */
-    public void callAssetList(AssetRequest<?> incomingRequest){
+    public AssetRequest<sqlList> callAssetList(AssetRequest<?> incomingRequest){
         try{
             //Establish a connection with the specific database
             Connection conn = DriverManager.getConnection(servURL);
@@ -243,18 +248,28 @@ class Driver{
 
             //Build out the testing suite and run the required tests
             rs = stmt.executeQuery(ssh.reqAssetList(incomingRequest));
+            sqlList sqllist = (sqlList)incomingRequest.getData();
 
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
-                //Any returning statements go here
+                String Asset_Name = rs.getString("Asset_Name");
+                int assetID = rs.getInt("AssetID");
+                int asset_typeID = rs.getInt("Asset_TypeID");
+                sqllist.addAsset(new Asset(Asset_Name, assetID, toAssetType(asset_typeID)));
             }
 
             //Close the connection for network security and bandwith reduction
             conn.close();
+
+            //Send back a request
+            AssetRequest<sqlList> request = new AssetRequest<>(AssetRequest.RequestType.CALL_ASSET_LIST, sqllist);
+            return request;
+
         }catch(Exception e){
             System.out.println("Error in creating a new user");
             System.out.println(e);
         }
+        return null;
     }
 
     /**
@@ -290,5 +305,22 @@ class Driver{
             System.out.println("Error in creating a new user");
             System.out.println(e);
         }
+    }
+
+    private assetTypes toAssetType(int typeID){
+        switch(typeID){
+            case 3:
+                return assetTypes.DESKTOP;
+            case 4:
+                return assetTypes.LAPTOP;
+            case 9:
+                return assetTypes.AIRCARD;
+            case 1:
+                return assetTypes.HOTSPOT;
+            default:
+                System.out.println("Invalid asset type id");
+                break;
+        }
+        return assetTypes.MONITOR;
     }
 }
