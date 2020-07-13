@@ -66,7 +66,7 @@ public class serverThread extends AssetConnection{
                         server.callUserList(request);
                         break;
                     default:
-                        throw new Exception("Error reading request from server");
+                        throw new Exception("Error reading request from client");
                 }
             }
         }catch(Exception e){

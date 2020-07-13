@@ -51,6 +51,7 @@ public class sqlStatementHandler {
         sqlList incomingData = (sqlList)request.getData();
         if(incomingData.getFirstType().equals(sqlList.searchType.BASIC)){
             //No filter or search term is applied, so just send the most basic data of everything
+            System.out.println(sqlStatement + "  1");
             return sqlStatement;
         }
         switch(incomingData.getFirstType()){
@@ -79,6 +80,7 @@ public class sqlStatementHandler {
                 break;
         }
 
+        System.out.println(sqlStatement + "  2");
         return sqlStatement;
     }
 

@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 
+import Server.AssetRequest.RequestType;
+
 public abstract class AssetConnection extends Thread {
 
     protected Socket socket;
@@ -24,6 +26,8 @@ public abstract class AssetConnection extends Thread {
     public void close(){
         try{
             open = false;
+            AssetRequest<?> closeRequest = new AssetRequest(RequestType.CLOSE_CONNECTION, "close");
+            sendRequest(closeRequest);
             socket.close();
         }catch(IOException e){
             System.out.println(e);
@@ -66,6 +70,7 @@ public abstract class AssetConnection extends Thread {
         try{
             out.writeUnshared(request);
             out.flush();
+            this.sleep(SLEEP_MS);
         }catch(Exception e){
             System.out.println("Send Request Error");
             System.out.println(e);

@@ -98,7 +98,9 @@ public class AssetRequest<E extends Serializable> implements Serializable{
          * the general request to get the basic information on all users. The server can then create a SQL statement
          * based on this information and report back with the necessary information. 
          */
-        CALL_USER_LIST
+        CALL_USER_LIST,
+
+        CLOSE_CONNECTION
     }
 
     private RequestType type;

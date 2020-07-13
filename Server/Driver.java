@@ -60,8 +60,8 @@ class Driver{
         }
 
         //Outside of testing suite: begin programming of actual server
-        //int portNumber = 54312;
-        //Driver serverDriver = new Driver(portNumber);
+        int portNumber = 54312;
+        Driver serverDriver = new Driver(portNumber);
 
     }
 
@@ -74,6 +74,7 @@ class Driver{
     //Constantly running loops that will allow the server to accept a client on via a thread and create another connection
     private void runLoop(){
         try(ServerSocket serverSocket = new ServerSocket(port)){
+            listeningDebugger = true;
             while(listeningDebugger){
                 new serverThread(serverSocket.accept(), this).start();
             }
@@ -234,7 +235,9 @@ class Driver{
      * statement.
      */
     public AssetRequest<sqlList> callAssetList(AssetRequest<?> incomingRequest){
+        System.out.println("callAssetList pre-attempt");
         try{
+            System.out.println("callAssetList try initialized");
             //Establish a connection with the specific database
             Connection conn = DriverManager.getConnection(servURL);
 
@@ -252,6 +255,7 @@ class Driver{
 
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
+                System.out.println("Hit");
                 String Asset_Name = rs.getString("Asset_Name");
                 int assetID = rs.getInt("AssetID");
                 int asset_typeID = rs.getInt("Asset_TypeID");
@@ -262,6 +266,7 @@ class Driver{
             conn.close();
 
             //Send back a request
+            System.out.println("send back");
             AssetRequest<sqlList> request = new AssetRequest<>(AssetRequest.RequestType.CALL_ASSET_LIST, sqllist);
             return request;
 
@@ -269,6 +274,7 @@ class Driver{
             System.out.println("Error in creating a new user");
             System.out.println(e);
         }
+        System.out.println("callAssetList try failed");
         return null;
     }
 

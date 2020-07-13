@@ -1,8 +1,12 @@
 package Client;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import javax.swing.JList;
+
+import DisplayObjects.sqlList;
 import GUI.GUIController;
 import Server.*;
 
@@ -19,6 +23,7 @@ public class ClientDriver extends AssetConnection {
     public void run(){
         guic = new GUIController(this);
         guic.initialize();
+        begin();
     }
 
     //TODO Potentially hard-code the port in as it will not change once it is determined
@@ -31,8 +36,9 @@ public class ClientDriver extends AssetConnection {
         try{
             while(true){
                 //Recognize and pull incoming request from the server
+                System.out.println("Pull read request");
                 AssetRequest<?> request = readRequest();
-
+                System.out.println(request.getType());
                 //Determine what the request is asking for/wants/is telling the client
                 switch(request.getType()){
                     case LOGIN_SUCCEEDED:
@@ -56,6 +62,9 @@ public class ClientDriver extends AssetConnection {
                         break;
                     case CALL_ASSET_LIST:
                         //TODO
+                        System.out.println("Update list is called by the client driver");
+                        guic.updateList((sqlList)request.getData());
+                        guic.refresh();
                         break;
                     case CALL_USER_LIST:
                         

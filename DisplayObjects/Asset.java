@@ -1,11 +1,14 @@
 package DisplayObjects;
+
+import java.io.Serializable;
+
 /*  @ahutton1 on github.com
     Software created is for use by University of Rochester Medicine Home Care, and is not for outside use
 */
 import enums.*;
 
 /*  The Asset class is an object that represents each individual asset  */
-public class Asset {
+public class Asset implements Serializable{
     //Variable declarations
         private String assetName, model, serialNumber;
         private assetTypes assetType;
@@ -34,6 +37,10 @@ public class Asset {
         this.assetName = assetname;
         this.assetType = assetType;
         this.assetNumber = assetNumber;
+    }
+
+    public String toListString(){
+        return (assetName + "\t" + assetNumber + "\t" + assetType);
     }
     
 }
