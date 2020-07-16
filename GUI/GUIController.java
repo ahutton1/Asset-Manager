@@ -6,6 +6,7 @@ import javax.swing.event.ListSelectionListener;
 
 import Client.ClientDriver;
 import DisplayObjects.Asset;
+import DisplayObjects.User;
 import DisplayObjects.sqlList;
 import Server.AssetRequest;
 import Server.AssetRequest.RequestType;
@@ -77,7 +78,9 @@ public class GUIController {
     private JScrollPane contentScroller;
     private sqlList activeList;
     private Asset activeAsset;
+    private User activeUser;
     private Asset[] activeAssetsInList;
+    private User[] activeUsersInList;
     DefaultListModel listModel = new DefaultListModel();
 
     /**
@@ -119,6 +122,47 @@ public class GUIController {
     private Dimension navDims;
     private Dimension searchButtonDims;
     private Dimension listPanelDims;
+
+    /**
+     * CONTENT INITIALIZATION AREA - POTENTIAL TEMPORARY INNER CLASS STRUCTURE USED FOR EASY-BUILD
+     *      TOTAL REFERENCE DECLARATIONS . . . . . . . . 22
+     *          TOTAL TEXT FIELDS  . . . . . . . . . . . 09
+     *          TOTAL COMBO BOXES  . . . . . . . . . . . 05
+     *          TOTAL RADIO BUTTONS  . . . . . . . . . . 02
+     *          TOTAL JPANELS  . . . . . . . . . . . . . 04
+     *          TOTAL GRIDLAYOUTS  . . . . . . . . . . . 02
+     *  
+     *      GRIDLAYOUTS  . . . . . . . . . . . . . . . . .
+     *          3 ROW , 3 COLUMN . . . . . . . .  ( 3 , 3 ) 
+     *          3 ROW , 1 COLUMN . . . . . . . .  ( 3 , 1 )
+     */
+    private GridLayout threeRoneC;
+    private GridLayout threeRthreeC;
+
+    private JPanel overall;
+    private JPanel genericCells;
+    private JPanel laptopCells;
+    private JPanel damagedCells;
+
+    private ButtonGroup assetDamageRepairGroup;
+    private JRadioButton sentRepairTrue;
+    private JRadioButton sentRepairFalse;
+
+        //ASSETS
+    private JTextField nameField;
+    private JTextField IDnumberField;
+    private JTextField modelField;
+    private JTextField serialField;
+    private JTextField phoneField;
+    private JTextField imeiField;
+    private JTextField simField;
+    private JTextField repairDateField;
+    private JTextArea damageDescriptionArea;
+        //USERS
+    private JTextField firstNameField;
+    private JTextField lastNameField;
+    private JTextField deptCodeField;
+
 
     /**
      * Testing suite used to test out the GUI without having to initialize client
@@ -226,10 +270,9 @@ public class GUIController {
         button_container.add(asset_search_phoneNumber);
 
 
-        // List panel initialization
+        // LIST PANEL INITIALIZATION . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
         listPanelDims = new Dimension((int) screenSize.getWidth() / 3 - 30, (int) screenSize.getHeight() / 10 * 8);
         listPanel = new JPanel();
-        String test[] = {"Help","I","Don't","Know","What","Is","Wrong","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"};
         //contents = new JList<String>(test);
         //listModel = new DefaultListModel<>();
         contents = new JList<>(listModel);
@@ -252,9 +295,6 @@ public class GUIController {
         window.revalidate();
         window.repaint();
 
-        /**
-         * TESTING
-         */
         searchListJointPanel = new JPanel();
         Dimension sljpDims = new Dimension((int) screenSize.getWidth() / 3 - 30, (int) screenSize.getHeight() / 10 * 9);
         searchListJointPanel.setPreferredSize(sljpDims);
@@ -262,16 +302,59 @@ public class GUIController {
         searchListJointPanel.add(listPanel);
         window.add(searchListJointPanel);
 
-        // Content panel initialization
+        // CONTENT PANEL INITIALIZATION . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
         contentPanel = new JPanel();
         Dimension contentDims = new Dimension((int) screenSize.getWidth() / 3 * 2,
                 (int) screenSize.getHeight() / 10 * 9);
         contentPanel.setPreferredSize(contentDims);
         contentPanel.setBackground(Color.YELLOW);
+
+        threeRoneC = new GridLayout(3,1);
+        threeRthreeC = new GridLayout(3,3);
+
+        overall = new JPanel(threeRoneC);
+        genericCells = new JPanel(threeRthreeC);
+        laptopCells = new JPanel(threeRthreeC);
+        damagedCells = new JPanel(threeRoneC);
+
+        overall.setSize(contentDims);
+        Dimension innerContentDims = new Dimension((int)contentDims.getWidth(),(int)contentDims.getHeight()/3);
+        genericCells.setSize(innerContentDims);
+        laptopCells.setSize(innerContentDims);
+        damagedCells.setSize(innerContentDims);
+        overall.add(genericCells,0,0);
+        overall.add(laptopCells,0,1);
+        overall.add(damagedCells,0,2);
+
+        initializeAllComponentFields();
+
+
         window.add(contentPanel);
 
-                    System.out.println("Test Output");
         window.setVisible(true);
+    }
+
+    /**
+     * Initializes all of the components used for the content field
+     * to help keep the main initializer less cluttered
+     */
+    private void initializeAllComponentFields(){
+        nameField = new JTextField();
+        IDnumberField = new JTextField();
+        modelField = new JTextField();
+        serialField = new JTextField();
+        phoneField = new JTextField();
+        imeiField = new JTextField();
+        simField = new JTextField();
+        repairDateField = new JTextField();
+        damageDescriptionArea = new JTextArea();
+
+        firstNameField = new JTextField();
+        lastNameField = new JTextField();
+        deptCodeField = new JTextField();
+
+        sentRepairTrue = new JRadioButton("Asset sent for repair");
+        sentRepairFalse = new JRadioButton("Asset not sent for repair");
     }
 
     /**
@@ -294,7 +377,6 @@ public class GUIController {
 
                 button_container.revalidate();
                 button_container.repaint();
-                // window.repaint();
             }
         } else {
             if (command.equals("usersBtn_viewUserListBtn")) {
@@ -312,7 +394,6 @@ public class GUIController {
 
                 button_container.revalidate();
                 button_container.repaint();
-                // window.repaint();
             }
 
         }
@@ -323,37 +404,49 @@ public class GUIController {
      * form of a JList
      */
     public void updateList(sqlList sqlcontents) {
-        System.out.println("Update list called");
         activeList = sqlcontents;
         activeAssetsInList = null;
-        activeAssetsInList = new Asset[sqlcontents.getAssetList().size()];
-        String listInfo[] = new String[sqlcontents.getAssetList().size()];
+        activeUsersInList = null;
         contentListSelectionListener clsl = new contentListSelectionListener(this);
-
         this.contents.removeListSelectionListener(clsl);
-        for(int i = listModel.getSize()-1; i > -1; i--){
-            listModel.remove(i);
+        this.listModel.removeAllElements();
+        //for(int i = listModel.getSize()-1; i > -1; i--){ listModel.remove(i); }
+        if(sqlcontents.getUserList().isEmpty()){
+            //Asset List
+            System.out.println("Update Asset List Called");
+            activeAssetsInList = new Asset[sqlcontents.getAssetList().size()];
+            for (int i = 0; i < sqlcontents.getAssetList().size(); i++) {
+                listModel.addElement((sqlcontents.getAssetList().get(i)).toListString());
+                activeAssetsInList[i] = sqlcontents.getAssetList().get(i);
+            }
+            activeAsset = activeAssetsInList[0];
+        }else{
+            //User list
+            System.out.println("Update User List Called");
+            activeUsersInList = new User[sqlcontents.getUserList().size()];
+            for(int i = 0; i < sqlcontents.getUserList().size(); i++){
+                listModel.addElement((sqlcontents.getUserList().get(i)).toListString());
+                activeUsersInList[i] = sqlcontents.getUserList().get(i);
+            }
+            activeUser = activeUsersInList[0];
         }
 
-        for (int i = 0; i < sqlcontents.getAssetList().size(); i++) {
-            System.out.println("Add to list: " + sqlcontents.getAssetList().get(i).toListString());
-            listInfo[i] = (sqlcontents.getAssetList().get(i)).toListString();
-            listModel.addElement((sqlcontents.getAssetList().get(i)).toListString());
-            activeAssetsInList[i] = sqlcontents.getAssetList().get(i);
-        }
-        activeAsset = activeAssetsInList[0];
         this.contents.setSelectedIndex(0);
         this.contents.addListSelectionListener(clsl);
-        /*this.contents.updateUI();
-        this.contents.revalidate();
-        this.contents.repaint();*/
     }
 
     /**
      * Updates the content panel to show whatever asset or user is active
      */
-    public void updateContentPanel(){
+    public void updateContentPanel(String type){
+        
+        if(type.equals("Asset")){
+            //An asset is to be shown to the screen
 
+        }else{
+            //A user is to be shown to the screen
+
+        }
     }
 
     /**
@@ -382,6 +475,12 @@ public class GUIController {
                     System.out.println("View User List Button Recognized");
                     switchActiveSearchingGroup(command);
                     current_group = user_search;
+                    sqlList sqllist_user = new sqlList();
+                    sqllist_user = setActiveListType(sqllist_user);
+                    //TODO set the search term
+                    AssetRequest<sqlList> uListReq = new AssetRequest<>(AssetRequest.RequestType.CALL_USER_LIST, sqllist_user);
+                    System.out.println("Sending the request to the client driver");
+                    clDr.sendRequest(uListReq);
                     break;
                 case "newUserBtn_createNewUserBtn":
                     System.out.println("Create New User Button Recognized");
@@ -432,8 +531,20 @@ public class GUIController {
         @Override
         public void valueChanged(ListSelectionEvent e) {
             // TODO Auto-generated method stub
-            source.activeAsset = source.activeAssetsInList[source.contents.getSelectedIndex()];
-            source.updateContentPanel();
+            if(activeAssetsInList==null){
+                //Users list is active
+                source.activeUser = source.activeUsersInList[source.contents.getSelectedIndex()];
+                source.updateContentPanel("User");
+            }else{
+                if(activeUsersInList==null){
+                    System.out.println("Error in reading the lists while trying to throw the content frame");
+                }else{
+                    //Assets list is active
+                    source.activeAsset = source.activeAssetsInList[source.contents.getSelectedIndex()];
+                    source.updateContentPanel("Asset");
+                }
+            }
+            
         }
 
     }
@@ -453,6 +564,7 @@ public class GUIController {
             }
         }
 
+        System.out.println(activeButton);
         switch(activeButton){
             case "Computer Name":
                 sqllist.searchTypeOne = sqlList.searchType.ASSET_NAME;
@@ -478,6 +590,10 @@ public class GUIController {
             case "Employment Status":
                 sqllist.searchTypeOne = sqlList.searchType.USER_STAT;
                 break;
+            case "":
+                System.out.println("Basic list setting set");
+                sqllist.searchTypeOne = sqlList.searchType.BASIC;
+                break;
             default:
                 System.out.println("Error in how the system read which button is active for the list");
                 break;
@@ -486,27 +602,5 @@ public class GUIController {
         return sqllist;
     }
 
-    /**
-     * Refreshes all of the major panels and pieces of the GUI
-     */
-    public void refresh(){
-        /*navPanel.revalidate();
-        navPanel.repaint();
-
-        searchListJointPanel.revalidate();
-        searchListJointPanel.repaint();
-
-        contentPanel.revalidate();
-        contentPanel.repaint();
-
-        contentScroller.remove(contents);
-        contentScroller.add(contents);
-
-        contentScroller.revalidate();
-        contentScroller.repaint();
-
-        listPanel.revalidate();
-        listPanel.repaint();*/
-    }
 
 }

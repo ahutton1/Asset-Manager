@@ -9,11 +9,11 @@ import java.util.ArrayList;
 /*  @ahutton1 on github.com
     Software created is for use by University of Rochester Medicine Home Care, and is not for outside use
 */
-import java.util.logging.FileHandler;
-
 import DisplayObjects.Asset;
+import DisplayObjects.User;
 import DisplayObjects.sqlList;
 import enums.assetTypes;
+import enums.employmentStatus;
 
 class Driver{
 
@@ -21,6 +21,7 @@ class Driver{
     private int port;
     protected ArrayList<String> clients;
     private static String servURL = "jdbc:sqlserver://10.221.0.220;databaseName=urmhc_equipment;user=read;password=vnsread";
+    private static String userTblURL = "jdbc:sqlserver://10.221.0.220;databaseName=vnsIT;user=read;password=vnsread";
 
     //Debugging variable. Used to see if the server is actively accepting another server thread
     private boolean listeningDebugger;
@@ -49,14 +50,6 @@ class Driver{
         }catch(Exception e){
             System.out.println("Connection error occured. Logging and shutting down");
             System.out.println(e);
-            //Extra debugging code for a logging file for crashes
-            /*try{
-                FileHandler fh = new FileHandler("ErrorLog.log");
-                Logger logger;
-            }catch(Exception logError){
-                System.out.println("Fatal Error Occured. Error Logging Failed. Shutting Down");
-                System.out.println(logError);
-            }*/
         }
 
         //Outside of testing suite: begin programming of actual server
@@ -235,9 +228,7 @@ class Driver{
      * statement.
      */
     public AssetRequest<sqlList> callAssetList(AssetRequest<?> incomingRequest){
-        System.out.println("callAssetList pre-attempt");
         try{
-            System.out.println("callAssetList try initialized");
             //Establish a connection with the specific database
             Connection conn = DriverManager.getConnection(servURL);
 
@@ -255,7 +246,6 @@ class Driver{
 
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
-                System.out.println("Hit");
                 String Asset_Name = rs.getString("Asset_Name");
                 int assetID = rs.getInt("AssetID");
                 int asset_typeID = rs.getInt("Asset_TypeID");
@@ -266,7 +256,6 @@ class Driver{
             conn.close();
 
             //Send back a request
-            System.out.println("send back");
             AssetRequest<sqlList> request = new AssetRequest<>(AssetRequest.RequestType.CALL_ASSET_LIST, sqllist);
             return request;
 
@@ -284,7 +273,9 @@ class Driver{
      * to the clent. Utilizes the sqlStatementHandler class for assistance with creating the
      * statement.
      */
-    public void callUserList(AssetRequest<?> incomingRequest){
+    public AssetRequest<sqlList> callUserList(AssetRequest<?> incomingRequest){
+        sqlList sqllist = (sqlList)incomingRequest.getData();
+        //Non-UP users
         try{
             //Establish a connection with the specific database
             Connection conn = DriverManager.getConnection(servURL);
@@ -293,16 +284,20 @@ class Driver{
             Statement stmt = conn.createStatement();
 
             //Create a placeholder for the results from a given select query
-            ResultSet rs;   
-
+            ResultSet rs;
             sqlStatementHandler ssh = new sqlStatementHandler();
 
             //Build out the testing suite and run the required tests
-            rs = stmt.executeQuery(ssh.reqUserInfo(incomingRequest));
+            rs = stmt.executeQuery(ssh.reqUserList(incomingRequest));
 
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
                 //Any returning statements go here
+                String lastName = rs.getString("drvNameLast");
+                String firstName = rs.getString("drvNameFirst");
+                //employmentStatus empStat = stringToEmp(rs.getString("drvEmplStatus"));
+                employmentStatus empStat = employmentStatus.ACTIVE;
+                sqllist.addUser(new User(lastName,firstName,empStat));
             }
 
             //Close the connection for network security and bandwith reduction
@@ -311,6 +306,62 @@ class Driver{
             System.out.println("Error in creating a new user");
             System.out.println(e);
         }
+
+        //ADUC users
+        try{
+            //Establish a connection with the specific database
+            Connection conn = DriverManager.getConnection(userTblURL);
+
+            //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
+            Statement stmt = conn.createStatement();
+
+            //Create a placeholder for the results from a given select query
+            ResultSet rs;
+            sqlStatementHandler ssh = new sqlStatementHandler();
+
+            //Build out the testing suite and run the required tests
+            rs = stmt.executeQuery(ssh.reqUserListAnnex(incomingRequest));
+
+            //Not necessary for methods that will not be returning anything
+            while(rs.next()){
+                //Any returning statements go here
+                String lastName = rs.getString("drvNameLast");
+                String firstName = rs.getString("drvNameFirst");
+                //employmentStatus empStat = stringToEmp(rs.getString("drvEmplStatus"));
+                employmentStatus empStat = employmentStatus.ACTIVE;
+                sqllist.addUser(new User(lastName,firstName,empStat));
+            }
+
+            //Close the connection for network security and bandwith reduction
+            conn.close();
+        }catch(Exception e){
+            System.out.println("Error in creating a new user");
+            System.out.println(e);
+        }
+
+        AssetRequest<sqlList> request = new AssetRequest<>(AssetRequest.RequestType.CALL_USER_LIST, sqllist);
+        return request;
+    }
+
+    private employmentStatus stringToEmp(String employmentString){
+        switch(employmentString.toLowerCase()){
+            case "terminated":
+                return employmentStatus.TERMINATED;
+            case "termed":
+                return employmentStatus.TERMINATED;
+            case "loa":
+                return employmentStatus.LOA;
+            case "leave":
+                return employmentStatus.LOA;
+            case "leave of absence":
+                return employmentStatus.LOA;
+            case "active":
+                return employmentStatus.ACTIVE;
+            default:
+                System.out.println("Error in reading the user employment status string.");
+                break;
+        }
+        return null;
     }
 
     private assetTypes toAssetType(int typeID){

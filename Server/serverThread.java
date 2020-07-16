@@ -63,7 +63,10 @@ public class serverThread extends AssetConnection{
                         sendRequest(homebound);
                         break;
                     case CALL_USER_LIST:
-                        server.callUserList(request);
+                        System.out.println("Developing user list dossier with callUserList");
+                        AssetRequest<sqlList> dossier = server.callUserList(request);
+                        System.out.println("Sending the developing dossier back to the client");
+                        sendRequest(dossier);
                         break;
                     default:
                         throw new Exception("Error reading request from client");

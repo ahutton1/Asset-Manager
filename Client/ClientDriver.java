@@ -62,12 +62,12 @@ public class ClientDriver extends AssetConnection {
                         break;
                     case CALL_ASSET_LIST:
                         //TODO
-                        System.out.println("Update list is called by the client driver");
+                        System.out.println("Update asset list is called by the client driver");
                         guic.updateList((sqlList)request.getData());
-                        guic.refresh();
                         break;
                     case CALL_USER_LIST:
-                        
+                        System.out.println("Update user list is called by the client driver");
+                        guic.updateList((sqlList)request.getData());
                         break;
                     default:
                         throw new Exception("Error reading request from server");

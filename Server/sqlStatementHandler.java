@@ -51,7 +51,6 @@ public class sqlStatementHandler {
         sqlList incomingData = (sqlList)request.getData();
         if(incomingData.getFirstType().equals(sqlList.searchType.BASIC)){
             //No filter or search term is applied, so just send the most basic data of everything
-            System.out.println(sqlStatement + "  1");
             return sqlStatement;
         }
         switch(incomingData.getFirstType()){
@@ -79,8 +78,6 @@ public class sqlStatementHandler {
                 System.err.println("Error in reading data type for asset list in translator");
                 break;
         }
-
-        System.out.println(sqlStatement + "  2");
         return sqlStatement;
     }
 
@@ -182,7 +179,36 @@ public class sqlStatementHandler {
      */
     public String reqUserList(AssetRequest<?> request){
         //TODO: Include joint searching of both the tblUsers and tblUsers_NonUP tables
-        String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmplStatus FROM tblUsers, tblUsers_NonUP";
+        String sqlStatement = "SELECT drvNameLast, drvNameFirst " /*, drvEmplStatus*/ + "FROM tblUsers_NonUP";
+        sqlList incomingData = (sqlList)request.getData();
+        if(incomingData.getFirstType().equals(sqlList.searchType.BASIC)){
+            //No filter or search term is applied, so just send the most basic data of everything
+            return sqlStatement;
+        }
+        switch(incomingData.getFirstType()){
+            case USER_FIRST:
+                sqlStatement = (sqlStatement + " WHERE drvNameFirst IN (" + handleName(incomingData.getFirstTerm()) + ")");
+                break;
+            case USER_LAST:
+                sqlStatement = (sqlStatement + " WHERE drvNameLast IN (" + handleName(incomingData.getFirstTerm()) + ")");
+                break;
+            case USER_STAT:
+                sqlStatement = (sqlStatement + " WHERE drvEmplStatus IN (" + incomingData.getFirstTerm() + ")");
+                break;
+            default:
+                break;
+        }
+        return sqlStatement;
+    }
+
+    /**
+     * Method that sends a SQL statement to the SQL virtual server requesting the entire list of users that is
+     * stored in the tables, based on what search conditions a user has on at any given time.
+     * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
+     */
+    public String reqUserListAnnex(AssetRequest<?> request){
+        //TODO: Include joint searching of both the tblUsers and tblUsers_NonUP tables
+        String sqlStatement = "SELECT drvNameLast, drvNameFirst " /*, drvEmplStatus*/ + "FROM EVNA_tbl";
         sqlList incomingData = (sqlList)request.getData();
         if(incomingData.getFirstType().equals(sqlList.searchType.BASIC)){
             //No filter or search term is applied, so just send the most basic data of everything
