@@ -13,6 +13,7 @@ import Server.AssetRequest.RequestType;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import enums.assetTypes;
@@ -79,8 +80,8 @@ public class GUIController {
     private sqlList activeList;
     private Asset activeAsset;
     private User activeUser;
-    private Asset[] activeAssetsInList;
-    private User[] activeUsersInList;
+    private ArrayList<Asset> activeAssetsInList;
+    private ArrayList<User> activeUsersInList;
     DefaultListModel listModel = new DefaultListModel();
 
     /**
@@ -147,6 +148,7 @@ public class GUIController {
     private ButtonGroup assetDamageRepairGroup;
     private JRadioButton sentRepairTrue;
     private JRadioButton sentRepairFalse;
+    private JPanel repairButtonOptionsPanel;
 
         //ASSETS
     private JTextField nameField;
@@ -158,11 +160,26 @@ public class GUIController {
     private JTextField simField;
     private JTextField repairDateField;
     private JTextArea damageDescriptionArea;
+    
         //USERS
     private JTextField firstNameField;
     private JTextField lastNameField;
     private JTextField deptCodeField;
 
+    //JCOMBO BOXES
+    private JComboBox<String> assetTypeCB;
+        private String[] assetTypeCB_list = {"Laptop","Desktop","Monitor","Aircard","Hotspot"};
+    private JComboBox<String> assetInventoryStatusCB;
+        private String[] assetInventoryStatusCB_list = {"Retired","Loaned","Disposed","Assigned","Damaged","Missing","In Stock"};
+    private JComboBox<String> assetAssociatedUserCB;
+        private String[] assetAssociatedUserCB_list;
+    private JComboBox<String> assetLaptopAirCardCarrierCB;
+        private String[] assetLaptopAirCardCarrierCB_list = {"Verizon","AT&T"};
+    private JComboBox<String> assetVendorCB;
+        private String[] assetVendorCB_list = {"DELL","Panasonic","Lenovo","HP","Verizon","AT&T"};
+
+    //Archive for program use
+    String updateContentPanelArchiveString = "";
 
     /**
      * Testing suite used to test out the GUI without having to initialize client
@@ -276,6 +293,8 @@ public class GUIController {
         //contents = new JList<String>(test);
         //listModel = new DefaultListModel<>();
         contents = new JList<>(listModel);
+        activeAssetsInList = new ArrayList<Asset>();
+        activeUsersInList = new ArrayList<User>();
         sqlList genesis = new sqlList();
         AssetRequest<sqlList> listInitializer = new AssetRequest<sqlList>(RequestType.CALL_ASSET_LIST, genesis);
         clDr.sendRequest(listInitializer);
@@ -348,6 +367,14 @@ public class GUIController {
         simField = new JTextField();
         repairDateField = new JTextField();
         damageDescriptionArea = new JTextArea();
+        assetTypeCB = new JComboBox<String>(assetTypeCB_list);
+        assetInventoryStatusCB = new JComboBox<String>(assetInventoryStatusCB_list);
+        assetLaptopAirCardCarrierCB = new JComboBox<String>(assetLaptopAirCardCarrierCB_list);
+        assetVendorCB = new JComboBox<String>(assetVendorCB_list);
+
+        sqlList activator = new sqlList();
+        AssetRequest<sqlList> request = new AssetRequest<>(AssetRequest.RequestType.CALL_USER_LIST, activator);
+        clDr.sendRequest(request);
 
         firstNameField = new JTextField();
         lastNameField = new JTextField();
@@ -355,6 +382,35 @@ public class GUIController {
 
         sentRepairTrue = new JRadioButton("Asset sent for repair");
         sentRepairFalse = new JRadioButton("Asset not sent for repair");
+
+        repairButtonOptionsPanel = new JPanel();
+        repairButtonOptionsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        repairButtonOptionsPanel.add(sentRepairTrue);
+        repairButtonOptionsPanel.add(sentRepairFalse);
+    }
+
+    /**
+     * Initializes and fills a String array listing the name of every user that
+     * is in the system.
+     * 
+     * Information of the users' names stored in assetAssociateduserCB_list
+     */
+    public synchronized void fillOutAssetUserList(sqlList incomingRequest){
+        //Accepting in the information
+        int count = 0;
+        ArrayList<String> rosetta = new ArrayList<String>();
+        while(!incomingRequest.getUserList().get(count).equals(null)){
+            rosetta.add(incomingRequest.getUserList().get(count).getLastName() + ", " + incomingRequest.getUserList().get(count).getFirstName());
+            count++;
+        }
+
+        //Translation of the rosetta to a usable information type
+        assetAssociatedUserCB_list = new String[rosetta.size()];
+        for(int inc = 0; inc < rosetta.size(); inc++){
+            assetAssociatedUserCB_list[inc] = rosetta.get(inc);
+        }
+
+        assetAssociatedUserCB = new JComboBox<String>(assetAssociatedUserCB_list);
     }
 
     /**
@@ -403,48 +459,124 @@ public class GUIController {
      * Updates the list panel to show the information provided to this method in the
      * form of a JList
      */
-    public void updateList(sqlList sqlcontents) {
+    public synchronized void updateList(sqlList sqlcontents) {
         activeList = sqlcontents;
-        activeAssetsInList = null;
-        activeUsersInList = null;
+        //activeAssetsInList = null;
+            for(int x = activeAssetsInList.size()-1; x > 0; x--){ activeAssetsInList.remove(x); }          //Switch to removal function
+        //activeUsersInList = null;      
+            for(int y = activeUsersInList.size()-1; y > 0; y--){ activeUsersInList.remove(y); }            //Switch to removal function
         contentListSelectionListener clsl = new contentListSelectionListener(this);
         this.contents.removeListSelectionListener(clsl);
-        this.listModel.removeAllElements();
-        //for(int i = listModel.getSize()-1; i > -1; i--){ listModel.remove(i); }
+            System.out.println(listModel.getSize());                                        //To remove
+            System.out.println(this.listModel);                                             //To remove
+        for(int i = listModel.getSize()-1; i > 0; i--){ listModel.remove(i); }
+        
+            System.out.println("Here");
         if(sqlcontents.getUserList().isEmpty()){
             //Asset List
             System.out.println("Update Asset List Called");
-            activeAssetsInList = new Asset[sqlcontents.getAssetList().size()];
+            activeAssetsInList = new ArrayList<Asset>();
             for (int i = 0; i < sqlcontents.getAssetList().size(); i++) {
                 listModel.addElement((sqlcontents.getAssetList().get(i)).toListString());
-                activeAssetsInList[i] = sqlcontents.getAssetList().get(i);
+                activeAssetsInList.add(i, sqlcontents.getAssetList().get(i));
             }
-            activeAsset = activeAssetsInList[0];
+            activeAsset = activeAssetsInList.get(0);
         }else{
             //User list
             System.out.println("Update User List Called");
-            activeUsersInList = new User[sqlcontents.getUserList().size()];
-            for(int i = 0; i < sqlcontents.getUserList().size(); i++){
-                listModel.addElement((sqlcontents.getUserList().get(i)).toListString());
-                activeUsersInList[i] = sqlcontents.getUserList().get(i);
+            activeUsersInList = new ArrayList<User>();
+            for(int i = 0; i < sqlcontents.getUserList().size(); i++){                      //Checks out
+                listModel.addElement((sqlcontents.getUserList().get(i)).toListString());    //Runs correctly (at least in terms of the GUI)
+                activeUsersInList.add(i,sqlcontents.getUserList().get(i));                  
             }
-            activeUser = activeUsersInList[0];
+            System.out.println("Recon 1");
+            activeUser = activeUsersInList.get(0);
         }
-
-        this.contents.setSelectedIndex(0);
+        //contents.setSelectedIndex(0);
+        System.out.println("Recon 2");
+        if(!listModel.get(0).equals(null)){
+            System.out.println("Recon 4");
+            System.out.println(listModel.get(0));
+            listModel.remove(0);
+            System.out.println(listModel.get(0));
+        }
+        System.out.println("Recon 3");
         this.contents.addListSelectionListener(clsl);
+        this.contents.setSelectedIndex(0);
+        //this.contents.addListSelectionListener(clsl);
     }
 
     /**
      * Updates the content panel to show whatever asset or user is active
      */
     public void updateContentPanel(String type){
-        
-        if(type.equals("Asset")){
+        //Removing the old
+        switch(updateContentPanelArchiveString){
+            case "Asset":
+                genericCells.remove(nameField);
+                genericCells.remove(IDnumberField);
+                genericCells.remove(modelField);
+                genericCells.remove(serialField);
+                break;
+            case "User":
+                genericCells.remove(firstNameField);
+                genericCells.remove(lastNameField);
+                genericCells.remove(deptCodeField);
+                break;
+            default:
+                //First time in use
+                break;
+        }
+
+        //Set current type string as the old one for future removal
+        updateContentPanelArchiveString = type;
+
+        //Adding all of the necessary pieces after the removal of old information
+        if(type.equals("Asset")){                   //TODO Associate the Combo Boxes and fill the user combo box list
             //An asset is to be shown to the screen
+
+            //Declarations
+            nameField.setText(activeAsset.getAssetName());
+            IDnumberField.setText("" + activeAsset.getAssetNumber());
+            modelField.setText(activeAsset.getAssetModel());
+            serialField.setText(activeAsset.getSerialNumber());
+            phoneField.setText(activeAsset.getPhoneNumber());
+            imeiField.setText(activeAsset.getIMEINumber());
+            simField.setText(activeAsset.getSIMNumber());
+
+            //Placing the text fields for -GENERIC CELLS-
+            genericCells.add(nameField,0,0);                            /* GENERIC CELL REGION FOR ASSETS */
+            genericCells.add(IDnumberField,0,1);                        // Asset Name       | Number    | Type
+            genericCells.add(assetTypeCB,0,2);                          // -----------------|-----------|------------
+            genericCells.add(assetInventoryStatusCB,1,0);               // Inventory Status | User      |
+            genericCells.add(assetAssociatedUserCB,1,1);                // -----------------|-----------|------------
+            genericCells.add(assetVendorCB,2,0);                        // Vendor           | Model     | Serial #
+            genericCells.add(modelField,2,1);                           
+            genericCells.add(serialField,2,2);
+
+            //Placing the text fields for -LAPTOP CONDITIONS-
+            laptopCells.add(assetLaptopAirCardCarrierCB,0,0);
+            laptopCells.add(phoneField,1,0);
+            laptopCells.add(imeiField,1,1);
+            laptopCells.add(simField,1,2);
+
+            //Placing the text fields for -DAMAGE CONDITIONS-
+            damagedCells.add(repairButtonOptionsPanel,0,0);
+            damagedCells.add(repairDateField);
+            damagedCells.add(damageDescriptionArea);
 
         }else{
             //A user is to be shown to the screen
+
+            //Declarations
+            firstNameField.setText(activeUser.getFirstName());
+            lastNameField.setText(activeUser.getLastName());
+            deptCodeField.setText(activeUser.getDeptCode());
+
+            //Placing the text fields
+            genericCells.add(firstNameField,0,0);
+            genericCells.add(lastNameField,0,1);
+            genericCells.add(deptCodeField,0,2);
 
         }
     }
@@ -530,17 +662,21 @@ public class GUIController {
 
         @Override
         public void valueChanged(ListSelectionEvent e) {
-            // TODO Auto-generated method stub
+            System.out.println("valueChanged Registered");
             if(activeAssetsInList==null){
                 //Users list is active
-                source.activeUser = source.activeUsersInList[source.contents.getSelectedIndex()];
+                System.out.println("vC User List status . . . ACTIVE");
+                source.activeUser = source.activeUsersInList.get(source.contents.getSelectedIndex());
                 source.updateContentPanel("User");
             }else{
                 if(activeUsersInList==null){
                     System.out.println("Error in reading the lists while trying to throw the content frame");
                 }else{
                     //Assets list is active
-                    source.activeAsset = source.activeAssetsInList[source.contents.getSelectedIndex()];
+                    System.out.println("vC Asset List status . . . ACTIVE");
+                    System.out.println(source.contents.getSelectedIndex());
+                    source.contents.setSelectedIndex(0);
+                    source.activeAsset = source.activeAssetsInList.get(source.contents.getSelectedIndex());
                     source.updateContentPanel("Asset");
                 }
             }

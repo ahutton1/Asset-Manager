@@ -69,6 +69,10 @@ public class ClientDriver extends AssetConnection {
                         System.out.println("Update user list is called by the client driver");
                         guic.updateList((sqlList)request.getData());
                         break;
+                    case CALL_LOCAL_USER_LIST:
+                        System.out.println("Local user list called and created for asset assignment");
+                        guic.fillOutAssetUserList((sqlList)request.getData());
+                        break;
                     default:
                         throw new Exception("Error reading request from server");
                 }

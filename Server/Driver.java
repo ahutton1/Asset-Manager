@@ -343,6 +343,77 @@ class Driver{
         return request;
     }
 
+    /**
+     * Method used to create a local list for an asset to be able to throw all of the potential users who could own
+     * or be currently using it. Extremely similar to the "callUserList" method, except this one forgoes callnig the 
+     * employment status of the users
+     */
+    public AssetRequest<sqlList> callLocalList(AssetRequest<?> incomingRequest){
+        sqlList sqllist = (sqlList)incomingRequest.getData();
+        //Non-UP users
+        try{
+            //Establish a connection with the specific database
+            Connection conn = DriverManager.getConnection(servURL);
+
+            //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
+            Statement stmt = conn.createStatement();
+
+            //Create a placeholder for the results from a given select query
+            ResultSet rs;
+            sqlStatementHandler ssh = new sqlStatementHandler();
+
+            //Build out the testing suite and run the required tests
+            rs = stmt.executeQuery(ssh.reqLocalUserList(incomingRequest));
+
+            //Not necessary for methods that will not be returning anything
+            while(rs.next()){
+                //Any returning statements go here
+                String lastName = rs.getString("drvNameLast");
+                String firstName = rs.getString("drvNameFirst");
+                sqllist.addUser(new User(lastName,firstName));
+            }
+
+            //Close the connection for network security and bandwith reduction
+            conn.close();
+        }catch(Exception e){
+            System.out.println("Error in creating a new user");
+            System.out.println(e);
+        }
+
+        //ADUC users
+        try{
+            //Establish a connection with the specific database
+            Connection conn = DriverManager.getConnection(userTblURL);
+
+            //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
+            Statement stmt = conn.createStatement();
+
+            //Create a placeholder for the results from a given select query
+            ResultSet rs;
+            sqlStatementHandler ssh = new sqlStatementHandler();
+
+            //Build out the testing suite and run the required tests
+            rs = stmt.executeQuery(ssh.reqUserListAnnex(incomingRequest));
+
+            //Not necessary for methods that will not be returning anything
+            while(rs.next()){
+                //Any returning statements go here
+                String lastName = rs.getString("drvNameLast");
+                String firstName = rs.getString("drvNameFirst");
+                sqllist.addUser(new User(lastName,firstName));
+            }
+
+            //Close the connection for network security and bandwith reduction
+            conn.close();
+        }catch(Exception e){
+            System.out.println("Error in creating a new user");
+            System.out.println(e);
+        }
+
+        AssetRequest<sqlList> request = new AssetRequest<>(AssetRequest.RequestType.CALL_USER_LIST, sqllist);
+        return request;
+    }
+
     private employmentStatus stringToEmp(String employmentString){
         switch(employmentString.toLowerCase()){
             case "terminated":

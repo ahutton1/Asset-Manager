@@ -68,6 +68,10 @@ public class serverThread extends AssetConnection{
                         System.out.println("Sending the developing dossier back to the client");
                         sendRequest(dossier);
                         break;
+                    case CALL_LOCAL_USER_LIST:
+                        AssetRequest<sqlList> localListings = server.callLocalList(request);
+                        sendRequest(localListings);
+                        break;
                     default:
                         throw new Exception("Error reading request from client");
                 }

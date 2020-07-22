@@ -12,8 +12,12 @@ public class User implements Serializable{
     private String lastName, firstName, deptCode;
     private employmentStatus empStat;
 
+    public User(String lastName, String firstName){
+        this.lastName = lastName;
+        this.firstName = firstName;
+    }
+
     public User(String lastName, String firstName, employmentStatus empStat){
-        //TODO
         this.lastName = lastName;
         this.firstName = firstName;
         this.empStat = empStat;

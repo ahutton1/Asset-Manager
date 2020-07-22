@@ -42,5 +42,29 @@ public class Asset implements Serializable{
     public String toListString(){
         return (assetName + "\t" + assetNumber + "\t" + assetType);
     }
+
+    public void setAirCardInformation(vendors carrier, String phoneNumber, String simNumber, String panasonicIMEI){
+        this.carrier = carrier;
+        this.phoneNumber = phoneNumber;
+        this.simNumber = simNumber;
+        this.panasonicIMEI = panasonicIMEI;
+    }
+
+    /**
+     * GETTERS FOR GUI VISUALIZATION
+     */
+
+    public String getAssetName(){ return assetName; }
+    public assetTypes getAssetType(){ return assetType; }
+    public int getAssetNumber(){ return assetNumber; }
+    public vendors getAssetVendor(){ return vendor; }
+    public String getAssetModel(){ return model; }
+    public String getSerialNumber(){ return serialNumber; }
+    public statusTypes getInvStat(){ return invStat; }
+    public User getUser(){ return user; }
+    public String getPhoneNumber(){ return phoneNumber; }
+    public String getIMEINumber(){ return panasonicIMEI; }
+    public String getSIMNumber(){ return simNumber; }
+    public vendors getCarrier(){ return carrier; }
     
 }

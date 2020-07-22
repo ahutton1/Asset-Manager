@@ -100,6 +100,14 @@ public class AssetRequest<E extends Serializable> implements Serializable{
          */
         CALL_USER_LIST,
 
+        /**
+         * CLIENT
+         * Used by the client to fill out the user list that is used to allow an association between an asset and a
+         * user. Send the request to the server and then call a user list based on the basic search terms, pulling all
+         * of the users from the server database.
+         */
+        CALL_LOCAL_USER_LIST,
+
         CLOSE_CONNECTION
     }
 

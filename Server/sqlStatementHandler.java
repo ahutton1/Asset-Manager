@@ -178,7 +178,6 @@ public class sqlStatementHandler {
      * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
      */
     public String reqUserList(AssetRequest<?> request){
-        //TODO: Include joint searching of both the tblUsers and tblUsers_NonUP tables
         String sqlStatement = "SELECT drvNameLast, drvNameFirst " /*, drvEmplStatus*/ + "FROM tblUsers_NonUP";
         sqlList incomingData = (sqlList)request.getData();
         if(incomingData.getFirstType().equals(sqlList.searchType.BASIC)){
@@ -199,6 +198,15 @@ public class sqlStatementHandler {
                 break;
         }
         return sqlStatement;
+    }
+
+    /**
+     * Method that sends a SQL statement to the SQL virtual server to pull all of the users in the list of ADUC
+     * and the list of non-UltiPro users stored on the SQL server.
+     * @return : List of users based on the basic terms to pull everyone
+     */
+    public String reqLocalUserList(AssetRequest<?> request){
+        return "SELECT drvNameLast, drvNameFirst FROM tblUsers_NonUP";
     }
 
     /**
