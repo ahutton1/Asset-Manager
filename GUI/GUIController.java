@@ -547,14 +547,21 @@ public class GUIController {
             //Placing the text fields for -GENERIC CELLS-
             genericCells.add(nameField,0,0);                            /* GENERIC CELL REGION FOR ASSETS */
             genericCells.add(IDnumberField,0,1);                        // Asset Name       | Number    | Type
+                assetTypeCB.setEditable(true);
+
+                //assetTypeCB.addActionListener();
             genericCells.add(assetTypeCB,0,2);                          // -----------------|-----------|------------
+                assetInventoryStatusCB.setEditable(true);
             genericCells.add(assetInventoryStatusCB,1,0);               // Inventory Status | User      |
+                assetAssociatedUserCB.setEditable(true);
             genericCells.add(assetAssociatedUserCB,1,1);                // -----------------|-----------|------------
+                assetVendorCB.setEditable(true);
             genericCells.add(assetVendorCB,2,0);                        // Vendor           | Model     | Serial #
             genericCells.add(modelField,2,1);                           
             genericCells.add(serialField,2,2);
 
             //Placing the text fields for -LAPTOP CONDITIONS-
+                assetLaptopAirCardCarrierCB.setEditable(true);
             laptopCells.add(assetLaptopAirCardCarrierCB,0,0);
             laptopCells.add(phoneField,1,0);
             laptopCells.add(imeiField,1,1);
