@@ -69,8 +69,11 @@ public class serverThread extends AssetConnection{
                         sendRequest(dossier);
                         break;
                     case CALL_LOCAL_USER_LIST:
+                        System.out.println("CALL_LOCAL_USER_LIST called");
                         AssetRequest<sqlList> localListings = server.callLocalList(request);
+                        System.out.println("Sending the local listings back . . .");
                         sendRequest(localListings);
+                        System.out.println("Sent");
                         break;
                     default:
                         throw new Exception("Error reading request from client");

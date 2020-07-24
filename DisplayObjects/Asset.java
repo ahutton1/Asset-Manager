@@ -10,7 +10,7 @@ import enums.*;
 /*  The Asset class is an object that represents each individual asset  */
 public class Asset implements Serializable{
     //Variable declarations
-        private String assetName, model, serialNumber;
+        private String assetName, model, serialNumber, imageDate;
         private assetTypes assetType;
         private int assetNumber;
         private vendors vendor;
@@ -20,6 +20,10 @@ public class Asset implements Serializable{
     //Laptop specific variable declarations
         private vendors carrier;
         private String phoneNumber, simNumber, panasonicIMEI;
+
+    //Damage specific variable declarations
+        private Boolean assetDamaged;
+        private String repairDate, damageDescription;
 
     //Constructor for an asset. Called when a new asset is being created by a user
     public Asset(String assetName,assetTypes assetType,int assetNumber,vendors vendor,String model,String serialNumber,statusTypes invStat,User user){
@@ -66,5 +70,30 @@ public class Asset implements Serializable{
     public String getIMEINumber(){ return panasonicIMEI; }
     public String getSIMNumber(){ return simNumber; }
     public vendors getCarrier(){ return carrier; }
+    public Boolean getAssetDamaged(){ return assetDamaged; }
+    public String getRepairDate(){ return repairDate; }
+    public String getDamageDescription(){ return damageDescription; }
+    public String getImageDate(){ return imageDate; }
+
+    /**
+     * SETTERS FOR DATABASE ALTERATION
+     */
+
+    public void setAssetName(String assetName){ this.assetName = assetName; }
+    public void setAssetType(assetTypes assetType){ this.assetType = assetType; }
+    public void setAssetNumber(int assetNumber){ this.assetNumber = assetNumber; }
+    public void setAssetVendor(vendors vendor){ this.vendor = vendor; }
+    public void setAssetModel(String model){ this.model = model; }
+    public void setSerialNumber(String serialNumber){ this.serialNumber = serialNumber; }
+    public void setInvStat(statusTypes invStat){ this.invStat = invStat; }
+    public void setUser(User user){ this.user = user; }
+    public void setPhoneNumber(String phoneNumber){ this.phoneNumber = phoneNumber; }
+    public void setIMEINumber(String panasonicIMEI){ this.panasonicIMEI = panasonicIMEI; }
+    public void setSIMNumber(String simNumber){ this.simNumber = simNumber; }
+    public void setCarrier(vendors carrier){ this.carrier = carrier; }
+    public void setAssetDamaged(Boolean assetDamaged){ this.assetDamaged = assetDamaged; }
+    public void setRepairDate(String repairDate){ this.repairDate = repairDate; }
+    public void setDamageDescription(String damageDescription){ this.damageDescription = damageDescription; }
+    public void setImageDate(String imageDate){ this.imageDate = imageDate; }
     
 }

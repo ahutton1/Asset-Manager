@@ -6,5 +6,5 @@ package enums;
 /*  Enum class that defines the asset types that are tracked by the program  */
 public enum assetTypes {
     //TODO Check to see if there are other necessary additions to this enum. Ex. Phones, Speaker Pucks, etc...
-    LAPTOP, DESKTOP, MONITOR, AIRCARD, HOTSPOT;
+    LAPTOP, DESKTOP, MONITOR, AIRCARD, HOTSPOT, NONE;
 }

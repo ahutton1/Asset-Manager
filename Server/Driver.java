@@ -158,6 +158,8 @@ class Driver{
      * statement.
      */
     public void callAsset(AssetRequest<?> incomingRequest){
+        Boolean assetIsLaptop = false;
+        Boolean assetIsDamaged = false;
         try{
             //Establish a connection with the specific database
             Connection conn = DriverManager.getConnection(servURL);
@@ -175,7 +177,49 @@ class Driver{
 
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
+                /**
+                * List called in the following order . . .
+                *      Asset Name               - NULL = ""
+                *      Asset ID                 - NULL = "None"
+                *      Asset Type               - NULL = "None"
+                *      Inventory Status         - NULL = "None"
+                *      User                     - NULL = "None"
+                *      Vendor                   - NULL = "None"
+                *      Model                    - NULL = ""
+                *      Serial                   - NULL = ""
+                *      Carrier                  - NULL = "None"
+                *      Phone Number             - NULL = ""
+                *      IMEI                     - NULL = ""
+                *      SIM                      - NULL = ""
+                *      Imaged Date              - NULL = ""
+                *      Sent for repair          - CANNOT BE NULL AS IT IS A RADIO BUTTON / BOOLEAN
+                *      Date sent for repair     - NULL = ""
+                *      Damage Description       - NULL = ""
+                */
                 //Any returning statements go here
+                String assetName = rs.getString("Asset_Name");
+                String assetNumber = rs.getString("Asset_Number");
+                int assetTypeAsInt = rs.getInt("Asset_TypeID");
+                    if(assetTypeAsInt == 4){ assetIsLaptop = true; }
+                int inventoryStatusAsInt = rs.getInt("Inventory_StatusID");
+                    if(inventoryStatusAsInt == 8){ assetIsDamaged = true; }
+                //Figure out how users are stored relative to assets in the database tables
+                int vendorAsInt = rs.getInt("VendorID");
+                String model = rs.getString("Model");
+                String serialNumber = rs.getString("Serial");
+                //Add in the imaged date field to the database tables
+
+                //Laptops
+                //Add carrier information column to the database tables
+                String phoneNumber = rs.getString("Phone_Number");
+                String panasonicIMEI = rs.getString("IMEI ID");
+                String simNumber = rs.getString("SIM Card");
+                
+                //Damaged
+                //Add the sent for repair field to the database tables
+                //Add the date send for repair field to the database tables
+                //Add the damage description field to the database tables
+
             }
 
             //Close the connection for network security and bandwith reduction
@@ -410,7 +454,7 @@ class Driver{
             System.out.println(e);
         }
 
-        AssetRequest<sqlList> request = new AssetRequest<>(AssetRequest.RequestType.CALL_USER_LIST, sqllist);
+        AssetRequest<sqlList> request = new AssetRequest<>(AssetRequest.RequestType.CALL_LOCAL_USER_LIST, sqllist);
         return request;
     }
 

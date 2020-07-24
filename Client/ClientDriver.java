@@ -82,33 +82,16 @@ public class ClientDriver extends AssetConnection {
         }
     }
 
-
-    synchronized public void viewAssetList(){
-
+    public sqlList localListRead(){
+        try{
+            AssetRequest<?> request = readRequest();
+            return (sqlList)request.getData();
+        }catch(Exception e){
+            System.out.println("Error in reading in the local list data");
+            System.out.println(e);
+            return null;
+        }
+        
     }
 
-
-    synchronized public void viewUserList(){
-
-    }
-
-
-    synchronized public void save(){
-
-    }
-
-
-    synchronized public void searchForInput(){
-
-    }
-
-
-    synchronized public void viewUser(){
-
-    }
-
-
-    synchronized public void viewAsset(){
-
-    }
 }

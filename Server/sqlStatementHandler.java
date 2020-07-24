@@ -270,12 +270,57 @@ public class sqlStatementHandler {
     /**
      * Method that sends a SQL statement to the SQL virtual server requesting all of the information regarding
      * a singular given asset. That asset's information is to be displayed in the main information display 
-     * panel on the right hand side of the application screen
+     * panel on the right hand side of the application screen. Does not include any of the information regarding
+     * laptops or of damaged machines. That information is called by other helper classes if an asset is deemed
+     * to be either a laptop or broken based on the information that is pulled by the system.
      * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
      */
     public String reqAssetInfo(AssetRequest<?> request){
+        /**
+         * List called in the following order . . .
+         *      Asset Name
+         *      Asset ID
+         *      Asset Type
+         *      Inventory Status
+         *      User
+         *      Vendor
+         *      Model
+         *      Serial
+         *      Carrier
+         *      Phone Number
+         *      IMEI
+         *      SIM
+         *      Imaged Date
+         *      Sent for repair
+         *      Date sent for repair
+         *      Damage Description
+         */
         search req = (search)request.getData();
         String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID, Inventory_StatusID, VendorID, Model, Serial FROM tblAssets WHERE (Asset_Name IN " + req.assetName + ") AND (AssetID IN " + req.assetID + ") AND (Asset_TypeID IN " + req.typeID + ")";
+        return sqlStatement;
+    }
+
+    /**
+     * Method that createas a SQL statement to be sent to the virtual server that will call all of the information
+     * specific to a laptop asset
+     * @param request
+     * @return
+     */
+    public String reqAssetLaptopInfo(AssetRequest<?> request){
+        search req = (search)request.getData();
+        String sqlStatement = "SELECT ___ FROM ___ WHERE ___ AND ___ AND ___";
+        return sqlStatement;
+    }
+
+    /**
+     * Method that creates a SQL statement to be sent to the virtual server that will call all of the information
+     * specific to the damage properties of a damaged asset
+     * @param request
+     * @return
+     */
+    public String reqAssetDamagedInfo(AssetRequest<?> request){
+        search req = (search)request.getData();
+        String sqlStatement = "SELECT ___ FROM ___ WHERE ___ AND ___ AND ___";
         return sqlStatement;
     }
     

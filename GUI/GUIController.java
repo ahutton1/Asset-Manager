@@ -181,6 +181,10 @@ public class GUIController {
     //Archive for program use
     String updateContentPanelArchiveString = "";
 
+    //Removal booleans
+    Boolean content_asset_removal_laptopCells = false;
+    Boolean content_asset_removal_damagedCells = false;
+
     /**
      * Testing suite used to test out the GUI without having to initialize client
      * information or the remote server.
@@ -345,9 +349,11 @@ public class GUIController {
         overall.add(laptopCells,0,1);
         overall.add(damagedCells,0,2);
 
-        initializeAllComponentFields();
+        //Potentially after a new split in how the code initializes : InitPart2
+        //initializeAllComponentFields();
 
-
+        //Include as part of initialization part 1
+        contentPanel.add(overall);
         window.add(contentPanel);
 
         window.setVisible(true);
@@ -373,8 +379,9 @@ public class GUIController {
         assetVendorCB = new JComboBox<String>(assetVendorCB_list);
 
         sqlList activator = new sqlList();
-        AssetRequest<sqlList> request = new AssetRequest<>(AssetRequest.RequestType.CALL_USER_LIST, activator);
+        AssetRequest<sqlList> request = new AssetRequest<>(AssetRequest.RequestType.CALL_LOCAL_USER_LIST, activator);
         clDr.sendRequest(request);
+        fillOutAssetUserList(clDr.localListRead());
 
         firstNameField = new JTextField();
         lastNameField = new JTextField();
@@ -517,6 +524,20 @@ public class GUIController {
                 genericCells.remove(IDnumberField);
                 genericCells.remove(modelField);
                 genericCells.remove(serialField);
+                genericCells.remove(assetInventoryStatusCB);
+                genericCells.remove(assetAssociatedUserCB);
+                genericCells.remove(assetVendorCB);
+                if(content_asset_removal_laptopCells){
+                    laptopCells.remove(assetLaptopAirCardCarrierCB);
+                    laptopCells.remove(phoneField);
+                    laptopCells.remove(imeiField);
+                    laptopCells.remove(simField);
+                }
+                if(content_asset_removal_damagedCells){
+                    damagedCells.remove(repairButtonOptionsPanel);
+                    damagedCells.remove(repairDateField);
+                    damagedCells.remove(damageDescriptionArea);
+                }
                 break;
             case "User":
                 genericCells.remove(firstNameField);
@@ -532,7 +553,7 @@ public class GUIController {
         updateContentPanelArchiveString = type;
 
         //Adding all of the necessary pieces after the removal of old information
-        if(type.equals("Asset")){                   //TODO Associate the Combo Boxes and fill the user combo box list
+        if(type.equals("Asset")){
             //An asset is to be shown to the screen
 
             //Declarations
@@ -560,17 +581,29 @@ public class GUIController {
             genericCells.add(modelField,2,1);                           
             genericCells.add(serialField,2,2);
 
-            //Placing the text fields for -LAPTOP CONDITIONS-
-                assetLaptopAirCardCarrierCB.setEditable(true);
-            laptopCells.add(assetLaptopAirCardCarrierCB,0,0);
-            laptopCells.add(phoneField,1,0);
-            laptopCells.add(imeiField,1,1);
-            laptopCells.add(simField,1,2);
+            if(activeAsset.getAssetType().equals(assetTypes.LAPTOP)){
+                //Placing the text fields for -LAPTOP CONDITIONS-
+                    assetLaptopAirCardCarrierCB.setEditable(true);
+                laptopCells.add(assetLaptopAirCardCarrierCB,0,0);
+                laptopCells.add(phoneField,1,0);
+                laptopCells.add(imeiField,1,1);
+                laptopCells.add(simField,1,2);
+                content_asset_removal_laptopCells = true;
+            }else{
+                content_asset_removal_laptopCells = false;
+            }
 
-            //Placing the text fields for -DAMAGE CONDITIONS-
-            damagedCells.add(repairButtonOptionsPanel,0,0);
-            damagedCells.add(repairDateField);
-            damagedCells.add(damageDescriptionArea);
+            if(activeAsset.getInvStat().equals(statusTypes.DAMAGED)){
+                //Placing the text fields for -DAMAGE CONDITIONS-
+                damagedCells.add(repairButtonOptionsPanel,0,0);
+                damagedCells.add(repairDateField);
+                damagedCells.add(damageDescriptionArea);
+                content_asset_removal_damagedCells = true;
+            }else{
+                content_asset_removal_damagedCells = false;
+            }
+
+            
 
         }else{
             //A user is to be shown to the screen
@@ -670,7 +703,7 @@ public class GUIController {
         @Override
         public void valueChanged(ListSelectionEvent e) {
             System.out.println("valueChanged Registered");
-            if(activeAssetsInList==null){
+            /*if(activeAssetsInList==null){
                 //Users list is active
                 System.out.println("vC User List status . . . ACTIVE");
                 source.activeUser = source.activeUsersInList.get(source.contents.getSelectedIndex());
@@ -686,7 +719,7 @@ public class GUIController {
                     source.activeAsset = source.activeAssetsInList.get(source.contents.getSelectedIndex());
                     source.updateContentPanel("Asset");
                 }
-            }
+            }*/
             
         }
 
