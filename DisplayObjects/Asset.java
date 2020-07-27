@@ -22,7 +22,7 @@ public class Asset implements Serializable{
         private String phoneNumber, simNumber, panasonicIMEI;
 
     //Damage specific variable declarations
-        private Boolean assetDamaged;
+        private Boolean assetDamaged, sentForRepair;
         private String repairDate, damageDescription;
 
     //Constructor for an asset. Called when a new asset is being created by a user
@@ -74,6 +74,7 @@ public class Asset implements Serializable{
     public String getRepairDate(){ return repairDate; }
     public String getDamageDescription(){ return damageDescription; }
     public String getImageDate(){ return imageDate; }
+    public Boolean getSentForRepair(){ return sentForRepair; }
 
     /**
      * SETTERS FOR DATABASE ALTERATION
@@ -95,5 +96,6 @@ public class Asset implements Serializable{
     public void setRepairDate(String repairDate){ this.repairDate = repairDate; }
     public void setDamageDescription(String damageDescription){ this.damageDescription = damageDescription; }
     public void setImageDate(String imageDate){ this.imageDate = imageDate; }
+    public void setSentForRepair(Boolean sentForRepair){ this.sentForRepair = sentForRepair; }
     
 }

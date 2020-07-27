@@ -12,8 +12,10 @@ import java.util.ArrayList;
 import DisplayObjects.Asset;
 import DisplayObjects.User;
 import DisplayObjects.sqlList;
+import Server.AssetRequest.RequestType;
 import enums.assetTypes;
 import enums.employmentStatus;
+import enums.vendors;
 
 class Driver{
 
@@ -157,7 +159,7 @@ class Driver{
      * to the client. Utilizes the sqlStatementHandler class for assistance with creating the 
      * statement.
      */
-    public void callAsset(AssetRequest<?> incomingRequest){
+    public AssetRequest<Asset> callAsset(AssetRequest<?> incomingRequest){
         Boolean assetIsLaptop = false;
         Boolean assetIsDamaged = false;
         try{
@@ -169,8 +171,14 @@ class Driver{
 
             //Create a placeholder for the results from a given select query
             ResultSet rs;   
-
             sqlStatementHandler ssh = new sqlStatementHandler();
+
+            search toRetMaster = (search)incomingRequest.getData();
+            String toRetName = toRetMaster.assetName;
+            int toRetID = toRetMaster.assetID;
+            int toRetTypeID = toRetMaster.typeID;
+            assetTypes toRetType = ssh.assetTypeIDtoType(toRetTypeID);
+            Asset toReturn = new Asset(toRetName, toRetID, toRetType);
 
             //Build out the testing suite and run the required tests
             rs = stmt.executeQuery(ssh.reqAssetInfo(incomingRequest));
@@ -198,36 +206,100 @@ class Driver{
                 */
                 //Any returning statements go here
                 String assetName = rs.getString("Asset_Name");
+                    if(rs.wasNull()){assetName = "";}
                 String assetNumber = rs.getString("Asset_Number");
+                    if(rs.wasNull()){assetNumber = "";}
                 int assetTypeAsInt = rs.getInt("Asset_TypeID");
-                    if(assetTypeAsInt == 4){ assetIsLaptop = true; }
+                    if(rs.wasNull()){assetTypeAsInt = 0;}
+                    if(assetTypeAsInt == 4){ assetIsLaptop = true; }else{ assetIsLaptop = false; }
                 int inventoryStatusAsInt = rs.getInt("Inventory_StatusID");
-                    if(inventoryStatusAsInt == 8){ assetIsDamaged = true; }
-                //Figure out how users are stored relative to assets in the database tables
+                    if(rs.wasNull()){inventoryStatusAsInt = 0;}
+                    if(inventoryStatusAsInt == 8){ assetIsDamaged = true; }else{ assetIsDamaged = false; }
+                String userAsString = rs.getString("User");
+                    if(rs.wasNull()){userAsString = "";}
                 int vendorAsInt = rs.getInt("VendorID");
+                    if(rs.wasNull()){vendorAsInt = 0;}
                 String model = rs.getString("Model");
+                    if(rs.wasNull()){model = "";}
                 String serialNumber = rs.getString("Serial");
-                //Add in the imaged date field to the database tables
+                    if(rs.wasNull()){serialNumber = "";}
+                String imageDate = rs.getString("imageDate");
+                    if(rs.wasNull()){imageDate = "";}
 
                 //Laptops
-                //Add carrier information column to the database tables
-                String phoneNumber = rs.getString("Phone_Number");
-                String panasonicIMEI = rs.getString("IMEI ID");
-                String simNumber = rs.getString("SIM Card");
+                int carrierAsInt = 0;
+                String phoneNumber = "";
+                String panasonicIMEI = "";
+                String simNumber = "";
+                if(assetIsLaptop){
+                    carrierAsInt = rs.getInt("Carrier");
+                        if(rs.wasNull()){carrierAsInt = 0;}
+                    phoneNumber = rs.getString("Phone_Number");
+                        if(rs.wasNull()){phoneNumber = "";}
+                    panasonicIMEI = rs.getString("IMEI ID");
+                        if(rs.wasNull()){panasonicIMEI = "";}
+                    simNumber = rs.getString("SIM Card");
+                        if(rs.wasNull()){simNumber= "";}
+                }
                 
                 //Damaged
-                //Add the sent for repair field to the database tables
-                //Add the date send for repair field to the database tables
-                //Add the damage description field to the database tables
+                int sentForRepairAsInt = 0;
+                String dateSentForRepair = "";
+                String damageDescription = "";
+                if(assetIsDamaged){
+                    sentForRepairAsInt = rs.getInt("sentForRepair");
+                        if(rs.wasNull()){sentForRepairAsInt = 0;}
+                    dateSentForRepair = rs.getString("dateSentForRepair");
+                        if(rs.wasNull()){dateSentForRepair = "";}
+                    damageDescription = rs.getString("damageDescription");
+                        if(rs.wasNull()){damageDescription = "";}
+                }
+
+                //Fill out the asset information to return
+                toReturn.setInvStat(ssh.invIDtoStat(inventoryStatusAsInt));
+                //Associate a user
+                    String userFirst;
+                    String userLast;
+                    String userEmpStatString;
+                    userLast = userAsString.substring(0,userAsString.indexOf(","));
+                    userFirst = userAsString.substring(userAsString.indexOf(",")+2,userAsString.indexOf(":")-1);
+                    userEmpStatString = userAsString.substring(userAsString.indexOf(":")+2,userAsString.length());
+                    search userRet = new search(userFirst,userLast,userEmpStatString);
+                    AssetRequest<User> user = callUser(new AssetRequest<search>(RequestType.CALL_USER,userRet));
+                    toReturn.setUser(user.getData());
+                toReturn.setAssetVendor(ssh.venIntToVen(vendorAsInt));
+                toReturn.setAssetModel(model);
+                toReturn.setSerialNumber(serialNumber);
+                toReturn.setImageDate(imageDate);
+                if(assetIsLaptop){
+                    toReturn.setCarrier(ssh.venIntToVen(carrierAsInt));
+                    toReturn.setPhoneNumber(phoneNumber);
+                    toReturn.setIMEINumber(panasonicIMEI);
+                    toReturn.setSIMNumber(simNumber);
+                }
+                if(assetIsDamaged){
+                    if(sentForRepairAsInt == 1){
+                        toReturn.setSentForRepair(true);
+                    }else{
+                        toReturn.setSentForRepair(false);
+                    }
+                    toReturn.setRepairDate(dateSentForRepair);
+                    toReturn.setDamageDescription(damageDescription);
+                }
 
             }
 
             //Close the connection for network security and bandwith reduction
             conn.close();
+
+            AssetRequest<Asset> ar = new AssetRequest<Asset>(RequestType.CALL_ASSET,toReturn);
+            return ar;
         }catch(Exception e){
-            System.out.println("Error in creating a new user");
+            System.out.println("Error in calling the asset");
             System.out.println(e);
         }
+        System.out.println("Error in calling the asset. Returning NULL from the server");
+        return null;
     }
 
     /**
@@ -236,7 +308,7 @@ class Driver{
      * to the client. Utilizes the sqlStatementHandler class for assistance with creating the 
      * statement.
      */
-    public void callUser(AssetRequest<?> incomingRequest){
+    public AssetRequest<User> callUser(AssetRequest<?> incomingRequest){
         try{
             //Establish a connection with the specific database
             Connection conn = DriverManager.getConnection(servURL);
@@ -246,8 +318,9 @@ class Driver{
 
             //Create a placeholder for the results from a given select query
             ResultSet rs;   
-
             sqlStatementHandler ssh = new sqlStatementHandler();
+            search req = (search)incomingRequest.getData();
+            User user = new User(req.userLast, req.userFirst, ssh.emplStatStringToStat(req.empStat));
 
             //Build out the testing suite and run the required tests
             rs = stmt.executeQuery(ssh.reqUserInfo(incomingRequest));
@@ -255,14 +328,29 @@ class Driver{
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
                 //Any returning statements go here
+                String lastName = rs.getString("drvNameLast");
+                    if(rs.wasNull()){lastName = "VOID";}
+                String firstName = rs.getString("drvNameFirst");
+                    if(rs.wasNull()){firstName = "VOID";}
+                int empNo = rs.getInt("drvEmpNo");
+                    if(rs.wasNull()){empNo = 000000;}
+                String emplStatAsString = rs.getString("drvEmplStatus");
+                    if(rs.wasNull()){emplStatAsString = "NONE";}
+
+                user.setEmpNo(empNo);
             }
 
             //Close the connection for network security and bandwith reduction
             conn.close();
+
+            AssetRequest<User> ar = new AssetRequest<User>(AssetRequest.RequestType.CALL_USER, user);
+            return ar;
         }catch(Exception e){
-            System.out.println("Error in creating a new user");
+            System.out.println("Error in calling user");
             System.out.println(e);
         }
+        System.out.println("Error in retrieving user. Server returning NULL");
+        return null;
     }
 
     /**
@@ -291,8 +379,11 @@ class Driver{
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
                 String Asset_Name = rs.getString("Asset_Name");
+                    if(rs.wasNull()){Asset_Name = "VOID";}
                 int assetID = rs.getInt("AssetID");
+                    if(rs.wasNull()){assetID = 0;}
                 int asset_typeID = rs.getInt("Asset_TypeID");
+                    if(rs.wasNull()){asset_typeID = 0;}
                 sqllist.addAsset(new Asset(Asset_Name, assetID, toAssetType(asset_typeID)));
             }
 
@@ -338,9 +429,11 @@ class Driver{
             while(rs.next()){
                 //Any returning statements go here
                 String lastName = rs.getString("drvNameLast");
+                    if(rs.wasNull()){lastName = "VOID";}
                 String firstName = rs.getString("drvNameFirst");
-                //employmentStatus empStat = stringToEmp(rs.getString("drvEmplStatus"));
-                employmentStatus empStat = employmentStatus.ACTIVE;
+                    if(rs.wasNull()){firstName = "VOID";}
+                employmentStatus empStat = stringToEmp(rs.getString("drvEmplStatus"));
+                    if(rs.wasNull()){ empStat = employmentStatus.NONE;}
                 sqllist.addUser(new User(lastName,firstName,empStat));
             }
 
@@ -370,9 +463,11 @@ class Driver{
             while(rs.next()){
                 //Any returning statements go here
                 String lastName = rs.getString("drvNameLast");
+                    if(rs.wasNull()){lastName = "VOID";}
                 String firstName = rs.getString("drvNameFirst");
-                //employmentStatus empStat = stringToEmp(rs.getString("drvEmplStatus"));
-                employmentStatus empStat = employmentStatus.ACTIVE;
+                    if(rs.wasNull()){firstName = "VOID";}
+                employmentStatus empStat = stringToEmp(rs.getString("drvEmplStatus"));
+                    if(rs.wasNull()){ empStat = employmentStatus.NONE;}
                 sqllist.addUser(new User(lastName,firstName,empStat));
             }
 
@@ -413,7 +508,9 @@ class Driver{
             while(rs.next()){
                 //Any returning statements go here
                 String lastName = rs.getString("drvNameLast");
+                    if(rs.wasNull()){lastName = "VOID";}
                 String firstName = rs.getString("drvNameFirst");
+                    if(rs.wasNull()){firstName = "VOID";}
                 sqllist.addUser(new User(lastName,firstName));
             }
 
@@ -443,7 +540,9 @@ class Driver{
             while(rs.next()){
                 //Any returning statements go here
                 String lastName = rs.getString("drvNameLast");
+                    if(rs.wasNull()){lastName = "VOID";}
                 String firstName = rs.getString("drvNameFirst");
+                    if(rs.wasNull()){firstName = "VOID";}
                 sqllist.addUser(new User(lastName,firstName));
             }
 
@@ -463,6 +562,8 @@ class Driver{
             case "terminated":
                 return employmentStatus.TERMINATED;
             case "termed":
+                return employmentStatus.TERMINATED;
+            case "term":
                 return employmentStatus.TERMINATED;
             case "loa":
                 return employmentStatus.LOA;

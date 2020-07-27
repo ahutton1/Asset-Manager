@@ -13,5 +13,5 @@ package enums;
     INSTOCK -> Asset is in hands of IT department, and is ready to be, or can be set up to be deployed upon need
 */
 public enum statusTypes {
-    RETIRED, LOANED, DISPOSED, ASSIGNED, DAMAGED, MISSING, INSTOCK;
+    RETIRED, LOANED, DISPOSED, ASSIGNED, DAMAGED, MISSING, INSTOCK, NONE;
 }

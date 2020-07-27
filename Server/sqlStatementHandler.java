@@ -1,7 +1,13 @@
 package Server;
 //TODO: ALL METHODS ARE STUBS. Methods needs to be fully flushed out and created based on information provided and needed SQL statements
 
+import java.lang.ProcessBuilder.Redirect.Type;
+
 import DisplayObjects.sqlList;
+import enums.assetTypes;
+import enums.employmentStatus;
+import enums.statusTypes;
+import enums.vendors;
 
 //For Reference -> View SQL Textbook
 
@@ -258,9 +264,9 @@ public class sqlStatementHandler {
      * on the right hand side of the application screen.
      * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
      */
-    public String reqUserInfo(AssetRequest<?> request){          //TODO
+    public String reqUserInfo(AssetRequest<?> request){
         search req = (search)request.getData();
-        String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmpNo, drvEmplStatus, ___ FROM tblUsers, tblUsers_NonUP WHERE (drvNameLast IN " + req.userLast + ") AND (drvNameFirst IN " + req.userFirst +") AND (drvEmplStatus IN " + req.empStat + ")";
+        String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmpNo, drvEmplStatus FROM tblUsers, tblUsers_NonUP WHERE (drvNameLast IN " + req.userLast + ") AND (drvNameFirst IN " + req.userFirst +") AND (drvEmplStatus IN " + req.empStat + ")";
 
         //TODO - Determine what information about the user should be shown in the content pane
 
@@ -276,6 +282,7 @@ public class sqlStatementHandler {
      * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
      */
     public String reqAssetInfo(AssetRequest<?> request){
+        //TODO : Input the following fields into the SQL server table; user(String)
         /**
          * List called in the following order . . .
          *      Asset Name
@@ -286,17 +293,10 @@ public class sqlStatementHandler {
          *      Vendor
          *      Model
          *      Serial
-         *      Carrier
-         *      Phone Number
-         *      IMEI
-         *      SIM
-         *      Imaged Date
-         *      Sent for repair
-         *      Date sent for repair
-         *      Damage Description
+         *      Date Imaged
          */
         search req = (search)request.getData();
-        String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID, Inventory_StatusID, VendorID, Model, Serial FROM tblAssets WHERE (Asset_Name IN " + req.assetName + ") AND (AssetID IN " + req.assetID + ") AND (Asset_TypeID IN " + req.typeID + ")";
+        String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID, Inventory_StatusID, User, VendorID, Model, Serial, imageDate FROM tblAssets WHERE (Asset_Name IN " + req.assetName + ") AND (AssetID IN " + req.assetID + ") AND (Asset_TypeID IN " + req.typeID + ")";
         return sqlStatement;
     }
 
@@ -308,7 +308,7 @@ public class sqlStatementHandler {
      */
     public String reqAssetLaptopInfo(AssetRequest<?> request){
         search req = (search)request.getData();
-        String sqlStatement = "SELECT ___ FROM ___ WHERE ___ AND ___ AND ___";
+        String sqlStatement = "SELECT Carrier, Phone_Number, SIM Card, IMEI ID FROM tblAssets WHERE (Asset_Name IN " + req.assetName + ") AND (AssetID IN " + req.assetID + ") AND (Asset_TypeID IN " + req.typeID + ")";
         return sqlStatement;
     }
 
@@ -320,8 +320,90 @@ public class sqlStatementHandler {
      */
     public String reqAssetDamagedInfo(AssetRequest<?> request){
         search req = (search)request.getData();
-        String sqlStatement = "SELECT ___ FROM ___ WHERE ___ AND ___ AND ___";
+        String sqlStatement = "SELECT sentForRepair, dateSentForRepair, damageDescription FROM tblAssets WHERE (Asset_Name IN " + req.assetName + ") AND (AssetID IN " + req.assetID + ") AND (Asset_TypeID IN " + req.typeID + ")";
         return sqlStatement;
+    }
+
+    /**
+     * Helper class used to convert an integer that is representing an asset type to an actual asset type object.
+     * @param TypeID - The int that represents an asset type
+     * @return - An asset Type that can then be applied to a search term or an asset
+     */
+    public assetTypes assetTypeIDtoType(int TypeID){
+        switch(TypeID){
+            case 1: return assetTypes.HOTSPOT;
+            case 3: return assetTypes.DESKTOP;
+            case 4: return assetTypes.LAPTOP;
+            case 9: return assetTypes.AIRCARD;
+            default: return assetTypes.NONE;
+        }
+    }
+
+    /**
+     * Helper method that associates an inputted inventory ID to a status type
+     * @param invStatID - Integer that represents an inventory status
+     * @return - A status type that can be assigned to a search term or asset
+     */
+    public statusTypes invIDtoStat(int invStatID){
+        switch(invStatID){
+            case 1: return statusTypes.INSTOCK;
+            case 2: return statusTypes.ASSIGNED;
+            case 3: return statusTypes.RETIRED;
+            case 4: return statusTypes.DISPOSED;
+            case 5: return statusTypes.LOANED;
+            case 7: return statusTypes.MISSING;
+            case 8: return statusTypes.DAMAGED;
+            default: return statusTypes.NONE;
+        }
+    }
+
+    /**
+     * Helper method that gives an associated vendor via an integer value
+     * @param vendorAsInt - Integer that represents a vendor
+     * @return - A vendor that can be assigned to a search term or asset
+     */
+    public vendors venIntToVen(int vendorAsInt){
+        switch(vendorAsInt){
+            case 1: return vendors.HP;
+            case 2: return vendors.DELL;
+            case 3: return vendors.XEROX;
+            case 4: return vendors.IBM;
+            case 5: return vendors.LENOVO;
+            case 6: return vendors.ASUS;
+            case 7: return vendors.COMPAQ;
+            case 8: return vendors.PATTON;
+            case 9: return vendors.DIRAD;
+            case 10: return vendors.VERIZON;
+            case 11: return vendors.BARRACUDA;
+            case 12: return vendors.CISCO;
+            case 13: return vendors.PANASONIC;
+            case 14: return vendors.BROTHER;
+            case 15: return vendors.SANSDIGIT;
+            case 16: return vendors.CANNON;
+            case 17: return vendors.LEXMARK;
+            case 18: return vendors.LG;
+            default: return vendors.NONE;
+        }
+    }
+
+    /**
+     * A helper class that translates a string to an employment status
+     * @param emplStatAsString - String representing an employment status
+     * @return - An employment status that can be assigned to a search term or user
+     */
+    public employmentStatus emplStatStringToStat(String emplStatAsString){
+        emplStatAsString = emplStatAsString.toLowerCase();
+        switch(emplStatAsString){
+            case "loa": return employmentStatus.LOA;
+            case "leave": return employmentStatus.LOA;
+            case "leave of absence": return employmentStatus.LOA;
+            case "absent": return employmentStatus.LOA;
+            case "active": return employmentStatus.ACTIVE;
+            case "terminated": return employmentStatus.TERMINATED;
+            case "termed": return employmentStatus.TERMINATED;
+            case "term": return employmentStatus.TERMINATED;
+            default: return employmentStatus.NONE;
+        }
     }
     
 }

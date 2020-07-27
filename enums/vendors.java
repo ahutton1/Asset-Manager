@@ -6,5 +6,5 @@ package enums;
 /*  Enum class that defines the different vendors that assets can be purchased from. Computers utilize DELL through HP, Aircards and hotspots utilize VERIZON and ATandT
 */
 public enum vendors {
-    DELL, PANASONIC, LENOVO, HP, VERIZON, ATandT;
+    DELL, PANASONIC, LENOVO, HP, VERIZON, ATandT, NONE, XEROX, IBM, ASUS, COMPAQ, PATTON, DIRAD, BARRACUDA, CISCO, BROTHER, SANSDIGIT, CANNON, LEXMARK, LG;
 }

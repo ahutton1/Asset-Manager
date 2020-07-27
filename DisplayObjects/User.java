@@ -9,7 +9,8 @@ import enums.*;
 //Class that represents a user of the URMHC system
 public class User implements Serializable{
     //TODO flush out user class variables
-    private String lastName, firstName, deptCode;
+    private String lastName, firstName;
+    private int empNo;
     private employmentStatus empStat;
 
     public User(String lastName, String firstName){
@@ -23,26 +24,25 @@ public class User implements Serializable{
         this.empStat = empStat;
     }
 
-    public User(String lastName, String firstName, employmentStatus empStat, String deptCode){
+    public User(String lastName, String firstName, employmentStatus empStat, int empNo){
         this.lastName = lastName;
         this.firstName = firstName;
         this.empStat = empStat;
-        this.deptCode = deptCode;
+        this.empNo = empNo;
     }
 
-    public void setDeptCode(String deptCode){this.deptCode = deptCode;}
-
+    public void setFirstName(String firstName){ this.firstName = firstName; }
+    public void setLastName(String lastName){ this.lastName = lastName; }
+    public void setEmpNo(int empNo){this.empNo = empNo;}
     public void setEmpStat(employmentStatus empStat){this.empStat = empStat;}
 
     public String toListString(){
         return (lastName + ", " + firstName + " : " + empStat);
     }
 
+
     public String getFirstName(){return firstName;}
-
     public String getLastName(){return lastName;}
-
-    public String getDeptCode(){return deptCode;}
-
+    public int getEmpNo(){return empNo;}
     public employmentStatus getEmpStat(){return empStat;}
 }

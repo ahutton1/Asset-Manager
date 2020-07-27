@@ -611,7 +611,7 @@ public class GUIController {
             //Declarations
             firstNameField.setText(activeUser.getFirstName());
             lastNameField.setText(activeUser.getLastName());
-            deptCodeField.setText(activeUser.getDeptCode());
+            deptCodeField.setText("" + activeUser.getEmpNo());
 
             //Placing the text fields
             genericCells.add(firstNameField,0,0);
