@@ -85,6 +85,15 @@ class Driver{
         }
     }
 
+    public void disconnectServerThread(String threadHost){
+        for(int i = 0; i < clients.size(); i++){
+            if(clients.get(i).equals(threadHost)){
+                clients.remove(i);
+                return;
+            }
+        }
+    }
+
     /**
      * Sends a SQL statement to the virtual server stating that a new User with specific sets
      * of data is being created. Utilizes the sqlStatementHandler class for assistance with
@@ -162,26 +171,35 @@ class Driver{
     public AssetRequest<Asset> callAsset(AssetRequest<?> incomingRequest){
         Boolean assetIsLaptop = false;
         Boolean assetIsDamaged = false;
+        System.out.println("START OF CALLASSET. BOOLEANS INITIALIZED");
         try{
             //Establish a connection with the specific database
             Connection conn = DriverManager.getConnection(servURL);
+            System.out.println("CONNECTION ESTABLISHED");
 
             //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
             Statement stmt = conn.createStatement();
+            System.out.println("CONCRETE STATEMENT CREATED");
 
             //Create a placeholder for the results from a given select query
             ResultSet rs;   
             sqlStatementHandler ssh = new sqlStatementHandler();
+            System.out.println("SQL STATEMENT CREATED");
 
             search toRetMaster = (search)incomingRequest.getData();
+            System.out.println("SEARCH OBJECT 'TORET' CREATED");
             String toRetName = toRetMaster.assetName;
             int toRetID = toRetMaster.assetID;
             int toRetTypeID = toRetMaster.typeID;
             assetTypes toRetType = ssh.assetTypeIDtoType(toRetTypeID);
+            System.out.println("TORETMASTER OBJECT FINISHED");
             Asset toReturn = new Asset(toRetName, toRetID, toRetType);
+            System.out.println("TORETURN INITIALIZED WITH A NAME, ID, AND TYPE");
 
             //Build out the testing suite and run the required tests
             rs = stmt.executeQuery(ssh.reqAssetInfo(incomingRequest));
+
+                System.out.println("CALL ASSET SQL STATEMENT EXECUTED");
 
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
@@ -207,24 +225,34 @@ class Driver{
                 //Any returning statements go here
                 String assetName = rs.getString("Asset_Name");
                     if(rs.wasNull()){assetName = "";}
-                String assetNumber = rs.getString("Asset_Number");
-                    if(rs.wasNull()){assetNumber = "";}
+                        System.out.println("ADDING ASSET NAME . . . DONE");
+                int assetNumber = rs.getInt("AssetID");
+                        System.out.println("Asset Number tripped. Error prevention check status . . . ACTIVE");
+                    if(rs.wasNull()){assetNumber = 0;}
+                        System.out.println("ADDING ASSET NUMBER . . . DONE");
                 int assetTypeAsInt = rs.getInt("Asset_TypeID");
                     if(rs.wasNull()){assetTypeAsInt = 0;}
                     if(assetTypeAsInt == 4){ assetIsLaptop = true; }else{ assetIsLaptop = false; }
+                        System.out.println("ADDING ASSET TYPE . . . DONE");
                 int inventoryStatusAsInt = rs.getInt("Inventory_StatusID");
                     if(rs.wasNull()){inventoryStatusAsInt = 0;}
                     if(inventoryStatusAsInt == 8){ assetIsDamaged = true; }else{ assetIsDamaged = false; }
+                        System.out.println("ADDING INVENTORY STATUS . . . DONE");
                 String userAsString = rs.getString("User");
                     if(rs.wasNull()){userAsString = "";}
+                        System.out.println("ADDING USER AS STRING . . . DONE");
                 int vendorAsInt = rs.getInt("VendorID");
                     if(rs.wasNull()){vendorAsInt = 0;}
+                        System.out.println("ADDING VENDOR . . . DONE");
                 String model = rs.getString("Model");
                     if(rs.wasNull()){model = "";}
+                        System.out.println("ADDING MODEL . . . DONE");
                 String serialNumber = rs.getString("Serial");
                     if(rs.wasNull()){serialNumber = "";}
+                        System.out.println("ADDING SERIAL NUMBER . . . DONE");
                 String imageDate = rs.getString("imageDate");
                     if(rs.wasNull()){imageDate = "";}
+                        System.out.println("ADDING IMAGE DATE . . . DONE");
 
                 //Laptops
                 int carrierAsInt = 0;
@@ -234,12 +262,16 @@ class Driver{
                 if(assetIsLaptop){
                     carrierAsInt = rs.getInt("Carrier");
                         if(rs.wasNull()){carrierAsInt = 0;}
+                            System.out.println("ASSET IS A LAPTOP: ADDING CARRIER . . . DONE");
                     phoneNumber = rs.getString("Phone_Number");
                         if(rs.wasNull()){phoneNumber = "";}
+                            System.out.println("ASSET IS A LAPTOP: ADDING PHONE NUMBER . . . DONE");
                     panasonicIMEI = rs.getString("IMEI ID");
                         if(rs.wasNull()){panasonicIMEI = "";}
+                            System.out.println("ASSET IS A LAPTOP: ADDING IMEI . . . DONE");
                     simNumber = rs.getString("SIM Card");
                         if(rs.wasNull()){simNumber= "";}
+                            System.out.println("ASSET IS A LAPTOP: ADDING SIM . . . DONE");
                 }
                 
                 //Damaged
@@ -249,10 +281,13 @@ class Driver{
                 if(assetIsDamaged){
                     sentForRepairAsInt = rs.getInt("sentForRepair");
                         if(rs.wasNull()){sentForRepairAsInt = 0;}
+                            System.out.println("ASSET DAMAGED: ADDING SENT FOR REPAIR BOOLEAN . . . DONE");
                     dateSentForRepair = rs.getString("dateSentForRepair");
                         if(rs.wasNull()){dateSentForRepair = "";}
+                            System.out.println("ASSET DAMAGED: ADDING DATE SENT FOR REPAIR . . . DONE");
                     damageDescription = rs.getString("damageDescription");
                         if(rs.wasNull()){damageDescription = "";}
+                            System.out.println("ASSET DAMAGED: ADDING DESCRIPTION . . . DONE");
                 }
 
                 //Fill out the asset information to return
@@ -267,6 +302,7 @@ class Driver{
                     search userRet = new search(userFirst,userLast,userEmpStatString);
                     AssetRequest<User> user = callUser(new AssetRequest<search>(RequestType.CALL_USER,userRet));
                     toReturn.setUser(user.getData());
+                        System.out.println("SETTING USER . . . USER SET");
                 toReturn.setAssetVendor(ssh.venIntToVen(vendorAsInt));
                 toReturn.setAssetModel(model);
                 toReturn.setSerialNumber(serialNumber);
@@ -291,6 +327,8 @@ class Driver{
 
             //Close the connection for network security and bandwith reduction
             conn.close();
+
+            System.out.println("CONNECTION CLOSED WITH SQL SERVER AFTER ASSET INFORMATION IS CALLED");
 
             AssetRequest<Asset> ar = new AssetRequest<Asset>(RequestType.CALL_ASSET,toReturn);
             return ar;
@@ -507,10 +545,12 @@ class Driver{
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
                 //Any returning statements go here
+                System.out.println("LOCAL USER LIST INSTANCE CREATION INITIALIZED");
                 String lastName = rs.getString("drvNameLast");
                     if(rs.wasNull()){lastName = "VOID";}
                 String firstName = rs.getString("drvNameFirst");
                     if(rs.wasNull()){firstName = "VOID";}
+                    System.out.println(lastName + ", " + firstName);
                 sqllist.addUser(new User(lastName,firstName));
             }
 
@@ -539,10 +579,12 @@ class Driver{
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
                 //Any returning statements go here
+                System.out.println("LOCAL USER LIST ANNEX INSTANCE CREATION INITIALIZED");
                 String lastName = rs.getString("drvNameLast");
                     if(rs.wasNull()){lastName = "VOID";}
                 String firstName = rs.getString("drvNameFirst");
                     if(rs.wasNull()){firstName = "VOID";}
+                    System.out.println(lastName + ", " + firstName);
                 sqllist.addUser(new User(lastName,firstName));
             }
 

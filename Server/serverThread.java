@@ -42,6 +42,7 @@ public class serverThread extends AssetConnection{
                         break;
                     case ERROR:
                         //Sent by server. Should not be received here
+                        //Return to the client if an error occurs while the server is performing tasks
                         goodToGo = false;
                         break;
                     case USER_ERROR:
@@ -53,10 +54,12 @@ public class serverThread extends AssetConnection{
                         server.createNewUser(request);
                         break;
                     case CALL_ASSET:
-                        server.callAsset(request);
+                        System.out.println("<CALL ASSET> REQUEST RECEIVED . . . INITILIZING REQUEST RESPONSE");
+                        sendRequest(server.callAsset(request));
                         break;
                     case CALL_USER:
-                        server.callUser(request);
+                        System.out.println("<CALL USER> REQUEST RECEIVED . . . INITIALIZING REQUEST RESPONSE");
+                        sendRequest(server.callUser(request));
                         break;
                     case CALL_ASSET_LIST:
                         AssetRequest<sqlList> homebound = server.callAssetList(request);
@@ -65,12 +68,14 @@ public class serverThread extends AssetConnection{
                     case CALL_USER_LIST:
                         System.out.println("Developing user list dossier with callUserList");
                         AssetRequest<sqlList> dossier = server.callUserList(request);
+                        //Add error check in here
                         System.out.println("Sending the developing dossier back to the client");
                         sendRequest(dossier);
                         break;
                     case CALL_LOCAL_USER_LIST:
                         System.out.println("CALL_LOCAL_USER_LIST called");
                         AssetRequest<sqlList> localListings = server.callLocalList(request);
+                        //Add error check in here
                         System.out.println("Sending the local listings back . . .");
                         sendRequest(localListings);
                         System.out.println("Sent");
@@ -81,6 +86,8 @@ public class serverThread extends AssetConnection{
             }
         }catch(Exception e){
             System.out.println(e);
+            server.disconnectServerThread(localHostString);
+            return;
         }
     }
 

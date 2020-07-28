@@ -296,7 +296,8 @@ public class sqlStatementHandler {
          *      Date Imaged
          */
         search req = (search)request.getData();
-        String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID, Inventory_StatusID, User, VendorID, Model, Serial, imageDate FROM tblAssets WHERE (Asset_Name IN " + req.assetName + ") AND (AssetID IN " + req.assetID + ") AND (Asset_TypeID IN " + req.typeID + ")";
+        String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID, Inventory_StatusID, User, VendorID, Model, Serial, imageDate FROM tblAssets WHERE (Asset_Name = '" + req.assetName + "') AND (AssetID = '" + req.assetID + "') AND (Asset_TypeID = '" + req.typeID + "')";
+        System.out.println(sqlStatement);
         return sqlStatement;
     }
 
@@ -308,7 +309,7 @@ public class sqlStatementHandler {
      */
     public String reqAssetLaptopInfo(AssetRequest<?> request){
         search req = (search)request.getData();
-        String sqlStatement = "SELECT Carrier, Phone_Number, SIM Card, IMEI ID FROM tblAssets WHERE (Asset_Name IN " + req.assetName + ") AND (AssetID IN " + req.assetID + ") AND (Asset_TypeID IN " + req.typeID + ")";
+        String sqlStatement = "SELECT Carrier, Phone_Number, SIM Card, IMEI ID FROM tblAssets WHERE (Asset_Name = '" + req.assetName + "') AND (AssetID = '" + req.assetID + "') AND (Asset_TypeID = '" + req.typeID + "')";
         return sqlStatement;
     }
 
@@ -320,7 +321,7 @@ public class sqlStatementHandler {
      */
     public String reqAssetDamagedInfo(AssetRequest<?> request){
         search req = (search)request.getData();
-        String sqlStatement = "SELECT sentForRepair, dateSentForRepair, damageDescription FROM tblAssets WHERE (Asset_Name IN " + req.assetName + ") AND (AssetID IN " + req.assetID + ") AND (Asset_TypeID IN " + req.typeID + ")";
+        String sqlStatement = "SELECT sentForRepair, dateSentForRepair, damageDescription FROM tblAssets WHERE (Asset_Name = '" + req.assetName + "') AND (AssetID = '" + req.assetID + "') AND (Asset_TypeID = '" + req.typeID + "')";
         return sqlStatement;
     }
 

@@ -9,6 +9,7 @@ import DisplayObjects.Asset;
 import DisplayObjects.User;
 import DisplayObjects.sqlList;
 import Server.AssetRequest;
+import Server.search;
 import Server.AssetRequest.RequestType;
 
 import java.awt.*;
@@ -302,6 +303,7 @@ public class GUIController {
         sqlList genesis = new sqlList();
         AssetRequest<sqlList> listInitializer = new AssetRequest<sqlList>(RequestType.CALL_ASSET_LIST, genesis);
         clDr.sendRequest(listInitializer);
+        clDr.readAssetList();
         listPanel.setBackground(Color.GREEN);
         contentScroller = new JScrollPane(contents);
         Dimension scrollingAreaDims = new Dimension((int) screenSize.getWidth() / 3 - 60,
@@ -350,7 +352,7 @@ public class GUIController {
         overall.add(damagedCells,0,2);
 
         //Potentially after a new split in how the code initializes : InitPart2
-        //initializeAllComponentFields();
+        initializeAllComponentFields();
 
         //Include as part of initialization part 1
         contentPanel.add(overall);
@@ -703,7 +705,7 @@ public class GUIController {
         @Override
         public void valueChanged(ListSelectionEvent e) {
             System.out.println("valueChanged Registered");
-            /*if(activeAssetsInList==null){
+            if(activeAssetsInList==null){
                 //Users list is active
                 System.out.println("vC User List status . . . ACTIVE");
                 source.activeUser = source.activeUsersInList.get(source.contents.getSelectedIndex());
@@ -717,10 +719,24 @@ public class GUIController {
                     System.out.println(source.contents.getSelectedIndex());
                     source.contents.setSelectedIndex(0);
                     source.activeAsset = source.activeAssetsInList.get(source.contents.getSelectedIndex());
+                    search assetInfo = new search(activeAsset.getAssetName(),assetTypeToInt(activeAsset.getAssetType()),activeAsset.getAssetNumber());
+                    AssetRequest<search> callAsset = new AssetRequest<search>(RequestType.CALL_ASSET,assetInfo);
+                    clDr.sendRequest(callAsset);
+                    source.activeAsset = clDr.receiveAsset();
                     source.updateContentPanel("Asset");
                 }
-            }*/
+            }
             
+        }
+
+        private int assetTypeToInt(assetTypes type){
+            switch(type){
+                case HOTSPOT: return 1;
+                case DESKTOP: return 3;
+                case LAPTOP: return 4;
+                case AIRCARD: return 9;
+                default: return 0;
+            }
         }
 
     }

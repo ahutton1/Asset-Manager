@@ -108,6 +108,11 @@ public class AssetRequest<E extends Serializable> implements Serializable{
          */
         CALL_LOCAL_USER_LIST,
 
+        /**
+         * CLIENT
+         * Used to notify the server that the specific client thread is going to disconnect from the server. Allows for
+         * a safe connection close and the server to close the thread and continue to run.
+         */
         CLOSE_CONNECTION
     }
 

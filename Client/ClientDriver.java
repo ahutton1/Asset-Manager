@@ -6,6 +6,7 @@ import java.net.Socket;
 
 import javax.swing.JList;
 
+import DisplayObjects.Asset;
 import DisplayObjects.sqlList;
 import GUI.GUIController;
 import Server.*;
@@ -92,6 +93,27 @@ public class ClientDriver extends AssetConnection {
             return null;
         }
         
+    }
+
+    public Asset receiveAsset(){
+        try{
+            AssetRequest<?> request = readRequest();
+            return (Asset)request.getData();
+        }catch(Exception e){
+            System.out.println("Error in receiving the asset information for the content pane in receiveAsset()");
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    public void readAssetList(){
+        try{
+            AssetRequest<?> req = readRequest();
+            guic.updateList((sqlList)req.getData());
+        }catch(Exception e){
+            System.out.println("Error in receiving the overall asset list that is being requested upon initilization");
+            System.out.println(e);
+        }
     }
 
 }

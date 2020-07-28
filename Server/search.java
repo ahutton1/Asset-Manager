@@ -2,8 +2,6 @@ package Server;
 
 import java.io.Serializable;
 
-import enums.employmentStatus;
-
 public class search implements Serializable{
 
     //Asset variables
