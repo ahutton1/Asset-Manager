@@ -63,22 +63,22 @@ public class sqlStatementHandler {
             case BASIC:
                 break;
             case ASSET_NAME:
-                sqlStatement = (sqlStatement + " WHERE Asset_Name IN (" + incomingData.getFirstTerm() + ")");
+                sqlStatement = (sqlStatement + " WHERE Asset_Name = ('" + incomingData.getFirstTerm() + "')" );
                 break;
             case ASSET_ID:
-                sqlStatement = (sqlStatement + " WHERE AssetID IN (" + incomingData.getFirstTerm() + ")");
+                sqlStatement = (sqlStatement + " WHERE AssetID = ('" + incomingData.getFirstTerm() + "')" );
                 break;
             case ASSET_TYPE:
-                sqlStatement = (sqlStatement + " WHERE AssetTypeID IN (" + findEquivID(incomingData.getFirstTerm()) + ")");
+                sqlStatement = (sqlStatement + " WHERE AssetTypeID = ('" + findEquivID(incomingData.getFirstTerm()) + "')" );
                 break;
             case ASSET_USER:
-                sqlStatement = (sqlStatement + " WHERE _ IN (" + incomingData.getFirstTerm() + ")");
+                sqlStatement = (sqlStatement + " WHERE _ = ('" + incomingData.getFirstTerm() + "')" );
                 break;
             case ASSET_STAT_TYPE:
-                sqlStatement = (sqlStatement + " WHERE Inventory_StatusID IN (" + invStatToID(incomingData.getFirstTerm()) + ")");
+                sqlStatement = (sqlStatement + " WHERE Inventory_StatusID = ('" + invStatToID(incomingData.getFirstTerm()) + "')" );
                 break;
             case ASSET_PHONE_NUMBER:
-                sqlStatement = (sqlStatement + " WHERE Phone_Number IN (" + incomingData.getFirstTerm() + ")");
+                sqlStatement = (sqlStatement + " WHERE Phone_Number = ('" + incomingData.getFirstTerm() + "')" );
                 break;
             default:
                 System.err.println("Error in reading data type for asset list in translator");
@@ -192,13 +192,13 @@ public class sqlStatementHandler {
         }
         switch(incomingData.getFirstType()){
             case USER_FIRST:
-                sqlStatement = (sqlStatement + " WHERE drvNameFirst IN (" + handleName(incomingData.getFirstTerm()) + ")");
+                sqlStatement = (sqlStatement + " WHERE drvNameFirst = ('" + handleName(incomingData.getFirstTerm()) + "')" );
                 break;
             case USER_LAST:
-                sqlStatement = (sqlStatement + " WHERE drvNameLast IN (" + handleName(incomingData.getFirstTerm()) + ")");
+                sqlStatement = (sqlStatement + " WHERE drvNameLast = ('" + handleName(incomingData.getFirstTerm()) + "')" );
                 break;
             case USER_STAT:
-                sqlStatement = (sqlStatement + " WHERE drvEmplStatus IN (" + incomingData.getFirstTerm() + ")");
+                sqlStatement = (sqlStatement + " WHERE drvEmplStatus = ('" + incomingData.getFirstTerm() + "')" );
                 break;
             default:
                 break;
@@ -230,13 +230,13 @@ public class sqlStatementHandler {
         }
         switch(incomingData.getFirstType()){
             case USER_FIRST:
-                sqlStatement = (sqlStatement + " WHERE drvNameFirst IN (" + handleName(incomingData.getFirstTerm()) + ")");
+                sqlStatement = (sqlStatement + " WHERE drvNameFirst = ('" + handleName(incomingData.getFirstTerm()) + "')" );
                 break;
             case USER_LAST:
-                sqlStatement = (sqlStatement + " WHERE drvNameLast IN (" + handleName(incomingData.getFirstTerm()) + ")");
+                sqlStatement = (sqlStatement + " WHERE drvNameLast = ('" + handleName(incomingData.getFirstTerm()) + "')" );
                 break;
             case USER_STAT:
-                sqlStatement = (sqlStatement + " WHERE drvEmplStatus IN (" + incomingData.getFirstTerm() + ")");
+                sqlStatement = (sqlStatement + " WHERE drvEmplStatus = ('" + incomingData.getFirstTerm() + "')" );
                 break;
             default:
                 break;
@@ -266,7 +266,7 @@ public class sqlStatementHandler {
      */
     public String reqUserInfo(AssetRequest<?> request){
         search req = (search)request.getData();
-        String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmpNo, drvEmplStatus FROM tblUsers, tblUsers_NonUP WHERE (drvNameLast IN " + req.userLast + ") AND (drvNameFirst IN " + req.userFirst +") AND (drvEmplStatus IN " + req.empStat + ")";
+        String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmpNo, drvEmplStatus FROM tblUsers, tblUsers_NonUP WHERE (drvNameLast = '" + req.userLast + "') AND (drvNameFirst = '" + req.userFirst +"') AND (drvEmplStatus = '" + req.empStat + "')" ;
 
         //TODO - Determine what information about the user should be shown in the content pane
 
