@@ -13,6 +13,8 @@ public class User implements Serializable{
     private int empNo;
     private employmentStatus empStat;
 
+    public User(){}
+
     public User(String lastName, String firstName){
         this.lastName = lastName;
         this.firstName = firstName;

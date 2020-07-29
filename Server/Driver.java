@@ -171,30 +171,30 @@ class Driver{
     public AssetRequest<Asset> callAsset(AssetRequest<?> incomingRequest){
         Boolean assetIsLaptop = false;
         Boolean assetIsDamaged = false;
-        System.out.println("START OF CALLASSET. BOOLEANS INITIALIZED");
+            System.out.println("START OF CALLASSET. BOOLEANS INITIALIZED");
         try{
             //Establish a connection with the specific database
             Connection conn = DriverManager.getConnection(servURL);
-            System.out.println("CONNECTION ESTABLISHED");
+                System.out.println("CONNECTION ESTABLISHED");
 
             //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
             Statement stmt = conn.createStatement();
-            System.out.println("CONCRETE STATEMENT CREATED");
+                System.out.println("CONCRETE STATEMENT CREATED");
 
             //Create a placeholder for the results from a given select query
             ResultSet rs;   
             sqlStatementHandler ssh = new sqlStatementHandler();
-            System.out.println("SQL STATEMENT CREATED");
+                System.out.println("SQL STATEMENT CREATED");
 
             search toRetMaster = (search)incomingRequest.getData();
-            System.out.println("SEARCH OBJECT 'TORET' CREATED");
+                System.out.println("SEARCH OBJECT 'TORET' CREATED");
             String toRetName = toRetMaster.assetName;
             int toRetID = toRetMaster.assetID;
             int toRetTypeID = toRetMaster.typeID;
             assetTypes toRetType = ssh.assetTypeIDtoType(toRetTypeID);
-            System.out.println("TORETMASTER OBJECT FINISHED");
+                System.out.println("TORETMASTER OBJECT FINISHED");
             Asset toReturn = new Asset(toRetName, toRetID, toRetType);
-            System.out.println("TORETURN INITIALIZED WITH A NAME, ID, AND TYPE");
+                System.out.println("TORETURN INITIALIZED WITH A NAME, ID, AND TYPE");
 
             //Build out the testing suite and run the required tests
             rs = stmt.executeQuery(ssh.reqAssetInfo(incomingRequest));
@@ -227,7 +227,6 @@ class Driver{
                     if(rs.wasNull()){assetName = "";}
                         System.out.println("ADDING ASSET NAME . . . DONE");
                 int assetNumber = rs.getInt("AssetID");
-                        System.out.println("Asset Number tripped. Error prevention check status . . . ACTIVE");
                     if(rs.wasNull()){assetNumber = 0;}
                         System.out.println("ADDING ASSET NUMBER . . . DONE");
                 int assetTypeAsInt = rs.getInt("Asset_TypeID");
@@ -238,7 +237,7 @@ class Driver{
                     if(rs.wasNull()){inventoryStatusAsInt = 0;}
                     if(inventoryStatusAsInt == 8){ assetIsDamaged = true; }else{ assetIsDamaged = false; }
                         System.out.println("ADDING INVENTORY STATUS . . . DONE");
-                String userAsString = rs.getString("User");
+                String userAsString = rs.getString("drvEmpNo");
                     if(rs.wasNull()){userAsString = "";}
                         System.out.println("ADDING USER AS STRING . . . DONE");
                 int vendorAsInt = rs.getInt("VendorID");
@@ -293,7 +292,7 @@ class Driver{
                 //Fill out the asset information to return
                 toReturn.setInvStat(ssh.invIDtoStat(inventoryStatusAsInt));
                 //Associate a user
-                    String userFirst;
+                    /*String userFirst;
                     String userLast;
                     String userEmpStatString;
                     userLast = userAsString.substring(0,userAsString.indexOf(","));
@@ -301,7 +300,11 @@ class Driver{
                     userEmpStatString = userAsString.substring(userAsString.indexOf(":")+2,userAsString.length());
                     search userRet = new search(userFirst,userLast,userEmpStatString);
                     AssetRequest<User> user = callUser(new AssetRequest<search>(RequestType.CALL_USER,userRet));
-                    toReturn.setUser(user.getData());
+                    toReturn.setUser(user.getData());*/
+                    if(!userAsString.equals("")){
+                        User associatedUser = callUserHelperClass(userAsString);
+                        toReturn.setUser(associatedUser);
+                    }
                         System.out.println("SETTING USER . . . USER SET");
                 toReturn.setAssetVendor(ssh.venIntToVen(vendorAsInt));
                 toReturn.setAssetModel(model);
@@ -328,7 +331,7 @@ class Driver{
             //Close the connection for network security and bandwith reduction
             conn.close();
 
-            System.out.println("CONNECTION CLOSED WITH SQL SERVER AFTER ASSET INFORMATION IS CALLED");
+                System.out.println("CONNECTION CLOSED WITH SQL SERVER AFTER ASSET INFORMATION IS CALLED");
 
             AssetRequest<Asset> ar = new AssetRequest<Asset>(RequestType.CALL_ASSET,toReturn);
             return ar;
@@ -338,6 +341,51 @@ class Driver{
         }
         System.out.println("Error in calling the asset. Returning NULL from the server");
         return null;
+    }
+
+    /**
+     * Calls the SQL server to find a user's information based off of an associated employee number. Nulls are checked prior to calling this 
+     * class, so the null case is handled inherently.
+     */
+    public User callUserHelperClass(String empNo){
+        try{
+            //Establish a connection with the specific database
+            Connection conn = DriverManager.getConnection(servURL);
+
+            //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
+            Statement stmt = conn.createStatement();
+
+            //Create a placeholder for the results from a given select query
+            ResultSet rs;   
+
+            sqlStatementHandler ssh = new sqlStatementHandler();
+
+            //Build out the testing suite and run the required tests
+            rs = stmt.executeQuery(ssh.reqUserInfoHelper(empNo));
+            User toReturn = new User();
+
+            //Not necessary for methods that will not be returning anything
+            while(rs.next()){
+                //Any returning statements go here
+                String userFirst = rs.getString("drvNameFirst");
+                String userLast = rs.getString("drvNameLast");
+                String empStat = rs.getString("drvEmplStatus");
+                toReturn.setFirstName(userFirst);
+                toReturn.setLastName(userLast);
+                toReturn.setEmpStat(stringToEmp(empStat));
+                toReturn.setEmpNo(Integer.parseInt(empNo));
+            }
+
+            //Close the connection for network security and bandwith reduction
+            conn.close();
+
+            //Return the user
+            return toReturn;
+        }catch(Exception e){
+            System.out.println("Error in creating a new user");
+            System.out.println(e);
+            return null;
+        }
     }
 
     /**
@@ -545,7 +593,7 @@ class Driver{
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
                 //Any returning statements go here
-                System.out.println("LOCAL USER LIST INSTANCE CREATION INITIALIZED");
+                    System.out.println("LOCAL USER LIST INSTANCE CREATION INITIALIZED");
                 String lastName = rs.getString("drvNameLast");
                     if(rs.wasNull()){lastName = "VOID";}
                 String firstName = rs.getString("drvNameFirst");
@@ -579,7 +627,7 @@ class Driver{
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
                 //Any returning statements go here
-                System.out.println("LOCAL USER LIST ANNEX INSTANCE CREATION INITIALIZED");
+                    System.out.println("LOCAL USER LIST ANNEX INSTANCE CREATION INITIALIZED");
                 String lastName = rs.getString("drvNameLast");
                     if(rs.wasNull()){lastName = "VOID";}
                 String firstName = rs.getString("drvNameFirst");
@@ -599,41 +647,39 @@ class Driver{
         return request;
     }
 
+    /**
+     * Helper class that can convert a string that represents an employment status into an actual employment
+     * status enum object that can be assigned to a user.
+     * @param employmentString : String that represents an employment status.
+     * @return : An employment status enumeration that can be applied to a user.
+     */
     private employmentStatus stringToEmp(String employmentString){
         switch(employmentString.toLowerCase()){
-            case "terminated":
-                return employmentStatus.TERMINATED;
-            case "termed":
-                return employmentStatus.TERMINATED;
-            case "term":
-                return employmentStatus.TERMINATED;
-            case "loa":
-                return employmentStatus.LOA;
-            case "leave":
-                return employmentStatus.LOA;
-            case "leave of absence":
-                return employmentStatus.LOA;
-            case "active":
-                return employmentStatus.ACTIVE;
-            default:
-                System.out.println("Error in reading the user employment status string.");
+            case "terminated": return employmentStatus.TERMINATED;
+            case "termed": return employmentStatus.TERMINATED;
+            case "term": return employmentStatus.TERMINATED;
+            case "loa": return employmentStatus.LOA;
+            case "leave": return employmentStatus.LOA;
+            case "leave of absence": return employmentStatus.LOA;
+            case "active": return employmentStatus.ACTIVE;
+            default: System.out.println("Error in reading the user employment status string.");
                 break;
         }
         return null;
     }
 
+    /**
+     * Helper class that takes an integer value and converts it into an asset type enumeration.
+     * @param typeID : Integer that represents an asset type.
+     * @return : An asset type enumeration that can be applied to an asset type or search term.
+     */
     private assetTypes toAssetType(int typeID){
         switch(typeID){
-            case 3:
-                return assetTypes.DESKTOP;
-            case 4:
-                return assetTypes.LAPTOP;
-            case 9:
-                return assetTypes.AIRCARD;
-            case 1:
-                return assetTypes.HOTSPOT;
-            default:
-                System.out.println("Invalid asset type id");
+            case 3: return assetTypes.DESKTOP;
+            case 4: return assetTypes.LAPTOP;
+            case 9: return assetTypes.AIRCARD;
+            case 1: return assetTypes.HOTSPOT;
+            default: System.out.println("Invalid asset type id");
                 break;
         }
         return assetTypes.MONITOR;

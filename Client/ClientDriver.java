@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import javax.swing.JList;
-
 import DisplayObjects.Asset;
 import DisplayObjects.sqlList;
 import GUI.GUIController;
@@ -27,7 +25,6 @@ public class ClientDriver extends AssetConnection {
         begin();
     }
 
-    //TODO Potentially hard-code the port in as it will not change once it is determined
     public ClientDriver(int port) throws Exception{
         super(new Socket("" + (InetAddress.getLocalHost()).getHostAddress(),54312));
     }

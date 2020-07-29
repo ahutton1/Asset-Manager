@@ -1,5 +1,4 @@
 package Server;
-//TODO: ALL METHODS ARE STUBS. Methods needs to be fully flushed out and created based on information provided and needed SQL statements
 
 import java.lang.ProcessBuilder.Redirect.Type;
 
@@ -267,9 +266,17 @@ public class sqlStatementHandler {
     public String reqUserInfo(AssetRequest<?> request){
         search req = (search)request.getData();
         String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmpNo, drvEmplStatus FROM tblUsers, tblUsers_NonUP WHERE (drvNameLast = '" + req.userLast + "') AND (drvNameFirst = '" + req.userFirst +"') AND (drvEmplStatus = '" + req.empStat + "')" ;
+        return sqlStatement;
+    }
 
-        //TODO - Determine what information about the user should be shown in the content pane
-
+    /**
+     * Calls a user's information based on that user's employee number. Null cases are to be handled prior to calling
+     * and utilizing this method.
+     * @param empNo : Integer representation of the employee's number
+     * @return : A SQL statement that can call the necessary user information from the SQL server database
+     */
+    public String reqUserInfoHelper(String empNo){
+        String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmpNo, drvEmplStatus FROM tblUsers, tblUsers_NonUP WHERE drvEmpNo = '" + empNo + "'" ;
         return sqlStatement;
     }
 
@@ -282,7 +289,6 @@ public class sqlStatementHandler {
      * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
      */
     public String reqAssetInfo(AssetRequest<?> request){
-        //TODO : Input the following fields into the SQL server table; user(String)
         /**
          * List called in the following order . . .
          *      Asset Name
@@ -296,8 +302,8 @@ public class sqlStatementHandler {
          *      Date Imaged
          */
         search req = (search)request.getData();
-        String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID, Inventory_StatusID, User, VendorID, Model, Serial, imageDate FROM tblAssets WHERE (Asset_Name = '" + req.assetName + "') AND (AssetID = '" + req.assetID + "') AND (Asset_TypeID = '" + req.typeID + "')";
-        System.out.println(sqlStatement);
+        String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID, Inventory_StatusID, drvEmpNo, VendorID, Model, Serial, imageDate FROM tblAssets WHERE (Asset_Name = '" + req.assetName + "') AND (AssetID = '" + req.assetID + "') AND (Asset_TypeID = '" + req.typeID + "')";
+            System.out.println(sqlStatement);
         return sqlStatement;
     }
 

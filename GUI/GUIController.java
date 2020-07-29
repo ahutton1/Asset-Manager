@@ -300,6 +300,14 @@ public class GUIController {
         contents = new JList<>(listModel);
         activeAssetsInList = new ArrayList<Asset>();
         activeUsersInList = new ArrayList<User>();
+        threeRoneC = new GridLayout(3,1);
+        threeRthreeC = new GridLayout(3,3);
+        overall = new JPanel(threeRoneC);
+        genericCells = new JPanel(threeRthreeC);
+        laptopCells = new JPanel(threeRthreeC);
+        damagedCells = new JPanel(threeRoneC);
+        //Potentially after a new split in how the code initializes : InitPart2
+        initializeAllComponentFields();
         sqlList genesis = new sqlList();
         AssetRequest<sqlList> listInitializer = new AssetRequest<sqlList>(RequestType.CALL_ASSET_LIST, genesis);
         clDr.sendRequest(listInitializer);
@@ -334,14 +342,6 @@ public class GUIController {
         contentPanel.setPreferredSize(contentDims);
         contentPanel.setBackground(Color.YELLOW);
 
-        threeRoneC = new GridLayout(3,1);
-        threeRthreeC = new GridLayout(3,3);
-
-        overall = new JPanel(threeRoneC);
-        genericCells = new JPanel(threeRthreeC);
-        laptopCells = new JPanel(threeRthreeC);
-        damagedCells = new JPanel(threeRoneC);
-
         overall.setSize(contentDims);
         Dimension innerContentDims = new Dimension((int)contentDims.getWidth(),(int)contentDims.getHeight()/3);
         genericCells.setSize(innerContentDims);
@@ -350,9 +350,6 @@ public class GUIController {
         overall.add(genericCells,0,0);
         overall.add(laptopCells,0,1);
         overall.add(damagedCells,0,2);
-
-        //Potentially after a new split in how the code initializes : InitPart2
-        initializeAllComponentFields();
 
         //Include as part of initialization part 1
         contentPanel.add(overall);
@@ -383,7 +380,9 @@ public class GUIController {
         sqlList activator = new sqlList();
         AssetRequest<sqlList> request = new AssetRequest<>(AssetRequest.RequestType.CALL_LOCAL_USER_LIST, activator);
         clDr.sendRequest(request);
+        System.out.println("Line immediately before fillOutAssetUserList(clDr.localListRead())");
         fillOutAssetUserList(clDr.localListRead());
+        System.out.println("Line immediately after fillOutAssetUserList(clDr.localListRead())");
 
         firstNameField = new JTextField();
         lastNameField = new JTextField();
@@ -406,11 +405,9 @@ public class GUIController {
      */
     public synchronized void fillOutAssetUserList(sqlList incomingRequest){
         //Accepting in the information
-        int count = 0;
         ArrayList<String> rosetta = new ArrayList<String>();
-        while(!incomingRequest.getUserList().get(count).equals(null)){
-            rosetta.add(incomingRequest.getUserList().get(count).getLastName() + ", " + incomingRequest.getUserList().get(count).getFirstName());
-            count++;
+        for(int i = 0; i < incomingRequest.getUserList().size(); i++){
+            rosetta.add(incomingRequest.getUserList().get(i).getLastName() + ", " + incomingRequest.getUserList().get(i).getFirstName());
         }
 
         //Translation of the rosetta to a usable information type
@@ -571,7 +568,7 @@ public class GUIController {
             genericCells.add(nameField,0,0);                            /* GENERIC CELL REGION FOR ASSETS */
             genericCells.add(IDnumberField,0,1);                        // Asset Name       | Number    | Type
                 assetTypeCB.setEditable(true);
-
+                assetTypeCB.setSelectedItem(activeAsset.getAssetType().toString());
                 //assetTypeCB.addActionListener();
             genericCells.add(assetTypeCB,0,2);                          // -----------------|-----------|------------
                 assetInventoryStatusCB.setEditable(true);
