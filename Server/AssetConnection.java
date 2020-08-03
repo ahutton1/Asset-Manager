@@ -50,7 +50,7 @@ public abstract class AssetConnection extends Thread {
      */
     public AssetRequest<?> readRequest() throws Exception{
         try{
-            Object request = in.readUnshared();
+            Object request = in.readObject();
             if(request instanceof AssetRequest){
                 return (AssetRequest<?>)request;
             }else{

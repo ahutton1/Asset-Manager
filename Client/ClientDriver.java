@@ -53,13 +53,14 @@ public class ClientDriver extends AssetConnection {
                         
                         break;
                     case CALL_ASSET:
-                        
+                        System.out.println("Information echo received . . . ");
+                        guic.setActiveAsset(((Asset)request.getData()));
+                        guic.updateContentPanel("Asset");
                         break;
                     case CALL_USER:
                         
                         break;
                     case CALL_ASSET_LIST:
-                        //TODO
                         System.out.println("Update asset list is called by the client driver");
                         guic.updateList((sqlList)request.getData());
                         break;
@@ -94,8 +95,10 @@ public class ClientDriver extends AssetConnection {
 
     public Asset receiveAsset(){
         try{
-            AssetRequest<?> request = readRequest();
-            return (Asset)request.getData();
+            System.out.println("Waiting at receiveAsset() for a response");
+            AssetRequest<?> request = (AssetRequest<?>)readRequest();
+            System.out.println("Information echo received . . . ");
+            return ((Asset)request.getData());
         }catch(Exception e){
             System.out.println("Error in receiving the asset information for the content pane in receiveAsset()");
             System.out.println(e);

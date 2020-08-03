@@ -183,7 +183,7 @@ public class sqlStatementHandler {
      * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
      */
     public String reqUserList(AssetRequest<?> request){
-        String sqlStatement = "SELECT drvNameLast, drvNameFirst " /*, drvEmplStatus*/ + "FROM tblUsers_NonUP";
+        String sqlStatement = "SELECT drvNameLast, drvNameFirst "/*, drvEmplStatus "*/ + "FROM tblUsers_NonUP";
         sqlList incomingData = (sqlList)request.getData();
         if(incomingData.getFirstType().equals(sqlList.searchType.BASIC)){
             //No filter or search term is applied, so just send the most basic data of everything
@@ -275,9 +275,15 @@ public class sqlStatementHandler {
      * @param empNo : Integer representation of the employee's number
      * @return : A SQL statement that can call the necessary user information from the SQL server database
      */
-    public String reqUserInfoHelper(String empNo){
-        String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmpNo, drvEmplStatus FROM tblUsers, tblUsers_NonUP WHERE drvEmpNo = '" + empNo + "'" ;
-        return sqlStatement;
+    public String reqUserInfoHelper(String empNo, boolean tableCase){
+        if(tableCase){
+            String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmpNo, drvEmplStatus FROM EVNA_Tbl WHERE drvEmpNo = '" + empNo + "'";
+            return sqlStatement;
+        }else{
+            String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmpNo, drvEmplStatus FROM tblUsers_NonUP WHERE drvEmpNo = '" + empNo + "'" ;
+            return sqlStatement;
+        }
+        
     }
 
     /**
@@ -315,7 +321,7 @@ public class sqlStatementHandler {
      */
     public String reqAssetLaptopInfo(AssetRequest<?> request){
         search req = (search)request.getData();
-        String sqlStatement = "SELECT Carrier, Phone_Number, SIM Card, IMEI ID FROM tblAssets WHERE (Asset_Name = '" + req.assetName + "') AND (AssetID = '" + req.assetID + "') AND (Asset_TypeID = '" + req.typeID + "')";
+        String sqlStatement = "SELECT Carrier, Phone_Number, SIM_Card, IMEI_ID FROM tblAssets WHERE (Asset_Name = '" + req.assetName + "') AND (AssetID = '" + req.assetID + "') AND (Asset_TypeID = '" + req.typeID + "')";
         return sqlStatement;
     }
 

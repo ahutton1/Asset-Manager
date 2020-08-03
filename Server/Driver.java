@@ -168,7 +168,7 @@ class Driver{
      * to the client. Utilizes the sqlStatementHandler class for assistance with creating the 
      * statement.
      */
-    public AssetRequest<Asset> callAsset(AssetRequest<?> incomingRequest){
+    public AssetRequest<?> callAsset(AssetRequest<?> incomingRequest){
         Boolean assetIsLaptop = false;
         Boolean assetIsDamaged = false;
             System.out.println("START OF CALLASSET. BOOLEANS INITIALIZED");
@@ -259,18 +259,26 @@ class Driver{
                 String panasonicIMEI = "";
                 String simNumber = "";
                 if(assetIsLaptop){
-                    carrierAsInt = rs.getInt("Carrier");
-                        if(rs.wasNull()){carrierAsInt = 0;}
+
+                    Statement stmtTwo = conn.createStatement();
+                    ResultSet rsTwo;
+                    rsTwo = stmtTwo.executeQuery(ssh.reqAssetLaptopInfo(incomingRequest));
+
+                    while(rsTwo.next()){
+                        carrierAsInt = rsTwo.getInt("Carrier");
+                        if(rsTwo.wasNull()){carrierAsInt = 0;}
                             System.out.println("ASSET IS A LAPTOP: ADDING CARRIER . . . DONE");
-                    phoneNumber = rs.getString("Phone_Number");
-                        if(rs.wasNull()){phoneNumber = "";}
+                        phoneNumber = rsTwo.getString("Phone_Number");
+                        if(rsTwo.wasNull()){phoneNumber = "";}
                             System.out.println("ASSET IS A LAPTOP: ADDING PHONE NUMBER . . . DONE");
-                    panasonicIMEI = rs.getString("IMEI ID");
-                        if(rs.wasNull()){panasonicIMEI = "";}
+                        panasonicIMEI = rsTwo.getString("IMEI_ID");
+                        if(rsTwo.wasNull()){panasonicIMEI = "";}
                             System.out.println("ASSET IS A LAPTOP: ADDING IMEI . . . DONE");
-                    simNumber = rs.getString("SIM Card");
-                        if(rs.wasNull()){simNumber= "";}
+                        simNumber = rsTwo.getString("SIM_Card");
+                        if(rsTwo.wasNull()){simNumber= "";}
                             System.out.println("ASSET IS A LAPTOP: ADDING SIM . . . DONE");
+                    }
+                    
                 }
                 
                 //Damaged
@@ -278,29 +286,28 @@ class Driver{
                 String dateSentForRepair = "";
                 String damageDescription = "";
                 if(assetIsDamaged){
-                    sentForRepairAsInt = rs.getInt("sentForRepair");
-                        if(rs.wasNull()){sentForRepairAsInt = 0;}
+
+                    Statement stmtThree = conn.createStatement();
+                    ResultSet rsThree;
+                    rsThree = stmtThree.executeQuery(ssh.reqAssetLaptopInfo(incomingRequest));
+
+                    while(rsThree.next()){
+                        sentForRepairAsInt = rsThree.getInt("sentForRepair");
+                        if(rsThree.wasNull()){sentForRepairAsInt = 0;}
                             System.out.println("ASSET DAMAGED: ADDING SENT FOR REPAIR BOOLEAN . . . DONE");
-                    dateSentForRepair = rs.getString("dateSentForRepair");
-                        if(rs.wasNull()){dateSentForRepair = "";}
+                          dateSentForRepair = rsThree.getString("dateSentForRepair");
+                        if(rsThree.wasNull()){dateSentForRepair = "";}
                             System.out.println("ASSET DAMAGED: ADDING DATE SENT FOR REPAIR . . . DONE");
-                    damageDescription = rs.getString("damageDescription");
-                        if(rs.wasNull()){damageDescription = "";}
+                        damageDescription = rsThree.getString("damageDescription");
+                        if(rsThree.wasNull()){damageDescription = "";}
                             System.out.println("ASSET DAMAGED: ADDING DESCRIPTION . . . DONE");
+                    }
+                    
                 }
 
                 //Fill out the asset information to return
                 toReturn.setInvStat(ssh.invIDtoStat(inventoryStatusAsInt));
                 //Associate a user
-                    /*String userFirst;
-                    String userLast;
-                    String userEmpStatString;
-                    userLast = userAsString.substring(0,userAsString.indexOf(","));
-                    userFirst = userAsString.substring(userAsString.indexOf(",")+2,userAsString.indexOf(":")-1);
-                    userEmpStatString = userAsString.substring(userAsString.indexOf(":")+2,userAsString.length());
-                    search userRet = new search(userFirst,userLast,userEmpStatString);
-                    AssetRequest<User> user = callUser(new AssetRequest<search>(RequestType.CALL_USER,userRet));
-                    toReturn.setUser(user.getData());*/
                     if(!userAsString.equals("")){
                         User associatedUser = callUserHelperClass(userAsString);
                         toReturn.setUser(associatedUser);
@@ -333,7 +340,7 @@ class Driver{
 
                 System.out.println("CONNECTION CLOSED WITH SQL SERVER AFTER ASSET INFORMATION IS CALLED");
 
-            AssetRequest<Asset> ar = new AssetRequest<Asset>(RequestType.CALL_ASSET,toReturn);
+            AssetRequest<?> ar = new AssetRequest(RequestType.CALL_ASSET,toReturn);
             return ar;
         }catch(Exception e){
             System.out.println("Error in calling the asset");
@@ -351,25 +358,67 @@ class Driver{
         try{
             //Establish a connection with the specific database
             Connection conn = DriverManager.getConnection(servURL);
+            Connection evnaConn = DriverManager.getConnection(userTblURL);
 
             //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
             Statement stmt = conn.createStatement();
+            Statement evnaStmt = conn.createStatement();
 
             //Create a placeholder for the results from a given select query
-            ResultSet rs;   
+            ResultSet rs;
+            ResultSet evnaRS;
 
             sqlStatementHandler ssh = new sqlStatementHandler();
 
             //Build out the testing suite and run the required tests
-            rs = stmt.executeQuery(ssh.reqUserInfoHelper(empNo));
+            rs = stmt.executeQuery(ssh.reqUserInfoHelper(empNo,false));
             User toReturn = new User();
+            boolean userFirstNull = false, userLastNull = false, empStatNull = false;
+            boolean allFirstNull = false, allLastNull = false, allStatsNull = false;
 
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
                 //Any returning statements go here
+                //Checks through the first database (NON-ULTIPRO-USERS)
                 String userFirst = rs.getString("drvNameFirst");
+                    if(rs.wasNull()){
+                        userFirst = "";
+                        userFirstNull = true;
+                    }
                 String userLast = rs.getString("drvNameLast");
+                    if(rs.wasNull()){
+                        userLast = "";
+                        userLastNull = true;
+                    }
                 String empStat = rs.getString("drvEmplStatus");
+                    if(rs.wasNull()){
+                        empStat = "";
+                        empStatNull = true;
+                    }
+
+                //Checks through the second database (EVNA - ADUC-LINKED)
+                if(userFirstNull||userLastNull||empStatNull){
+                    evnaRS = evnaStmt.executeQuery(ssh.reqUserInfoHelper(empNo,true));
+                    while(evnaRS.next()){
+                        userFirst = rs.getString("drvNameFirst");
+                            if(rs.wasNull()){
+                                userFirst = "";
+                                allFirstNull = true;
+                            }
+                        userLast = rs.getString("drvNameLast");
+                            if(rs.wasNull()){
+                                userLast = "";
+                                allLastNull = true;
+                            }
+                        empStat = rs.getString("drvEmplStatus");
+                            if(rs.wasNull()){
+                                empStat = "";
+                                allStatsNull = true;
+                            }
+                    }
+                }
+
+                //Set the returned values
                 toReturn.setFirstName(userFirst);
                 toReturn.setLastName(userLast);
                 toReturn.setEmpStat(stringToEmp(empStat));
@@ -382,7 +431,7 @@ class Driver{
             //Return the user
             return toReturn;
         }catch(Exception e){
-            System.out.println("Error in creating a new user");
+            System.out.println("Error in calling user from the helper class");
             System.out.println(e);
             return null;
         }

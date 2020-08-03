@@ -507,7 +507,7 @@ public class GUIController {
             System.out.println(listModel.get(0));
         }
         System.out.println("Recon 3");
-        this.contents.addListSelectionListener(clsl);
+        this.contents.addListSelectionListener(new contentListSelectionListener(this));
         this.contents.setSelectedIndex(0);
         //this.contents.addListSelectionListener(clsl);
     }
@@ -618,6 +618,12 @@ public class GUIController {
             genericCells.add(deptCodeField,0,2);
 
         }
+
+        genericCells.revalidate(); genericCells.repaint();
+        laptopCells.revalidate(); laptopCells.repaint();
+        damagedCells.revalidate(); damagedCells.repaint();
+        contentPanel.revalidate(); contentPanel.repaint();
+        window.revalidate(); window.repaint();
     }
 
     /**
@@ -628,6 +634,7 @@ public class GUIController {
         @Override
         public void actionPerformed(ActionEvent e) {
             String command = e.getActionCommand();
+            System.out.println(command);
             switch (command) {
                 case "assetsBtn_viewAssetListBtn":
                     System.out.println("View Asset List Button Recognized");
@@ -714,12 +721,12 @@ public class GUIController {
                     //Assets list is active
                     System.out.println("vC Asset List status . . . ACTIVE");
                     System.out.println(source.contents.getSelectedIndex());
-                    source.contents.setSelectedIndex(0);
+                    //source.contents.setSelectedIndex(0);
                     source.activeAsset = source.activeAssetsInList.get(source.contents.getSelectedIndex());
                     search assetInfo = new search(activeAsset.getAssetName(),assetTypeToInt(activeAsset.getAssetType()),activeAsset.getAssetNumber());
                     AssetRequest<search> callAsset = new AssetRequest<search>(RequestType.CALL_ASSET,assetInfo);
                     clDr.sendRequest(callAsset);
-                    source.activeAsset = clDr.receiveAsset();
+                    //source.activeAsset = clDr.receiveAsset();
                     source.updateContentPanel("Asset");
                 }
             }
@@ -789,6 +796,10 @@ public class GUIController {
         }
 
         return sqllist;
+    }
+
+    public void setActiveAsset(Asset activeAsset){
+        this.activeAsset = activeAsset;
     }
 
 
