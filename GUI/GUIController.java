@@ -172,13 +172,13 @@ public class GUIController {
     private JComboBox<String> assetTypeCB;
         private String[] assetTypeCB_list = {"Laptop","Desktop","Monitor","Aircard","Hotspot"};
     private JComboBox<String> assetInventoryStatusCB;
-        private String[] assetInventoryStatusCB_list = {"Retired","Loaned","Disposed","Assigned","Damaged","Missing","In Stock"};
+        private String[] assetInventoryStatusCB_list = {"Retired","Loaned","Disposed","Assigned","Damaged","Missing","In Stock", "None"};
     private JComboBox<String> assetAssociatedUserCB;
         private String[] assetAssociatedUserCB_list;
     private JComboBox<String> assetLaptopAirCardCarrierCB;
         private String[] assetLaptopAirCardCarrierCB_list = {"Verizon","AT&T"};
     private JComboBox<String> assetVendorCB;
-        private String[] assetVendorCB_list = {"DELL","Panasonic","Lenovo","HP","Verizon","AT&T"};
+        private String[] assetVendorCB_list = {"DELL","Panasonic","Lenovo","HP","Verizon","AT&T", "Xerox", "Asus", "Cisco", "Cannon", "Lexmark", "LG", "None"};
 
     //Archive for program use
     String updateContentPanelArchiveString = "";
@@ -569,28 +569,30 @@ public class GUIController {
             simField.setText(activeAsset.getSIMNumber());
 
             //Placing the text fields for -GENERIC CELLS-
-            genericCells.add(nameField,0,0);                            /* GENERIC CELL REGION FOR ASSETS */
-            genericCells.add(IDnumberField,0,1);                        // Asset Name       | Number    | Type
+            genericCells.add(nameField);
+            genericCells.add(IDnumberField);
                 assetTypeCB.setEditable(true);
                 assetTypeCB.setSelectedItem(activeAsset.getAssetType().toString());
-                //assetTypeCB.addActionListener();
-            genericCells.add(assetTypeCB,0,2);                          // -----------------|-----------|------------
+            genericCells.add(assetTypeCB);
                 assetInventoryStatusCB.setEditable(true);
-            genericCells.add(assetInventoryStatusCB,1,0);               // Inventory Status | User      |
+                assetInventoryStatusCB.setSelectedItem(invStatAsString(activeAsset.getInvStat()));
+            genericCells.add(assetInventoryStatusCB);
                 assetAssociatedUserCB.setEditable(true);
-            genericCells.add(assetAssociatedUserCB,1,1);                // -----------------|-----------|------------
+                assetAssociatedUserCB.setSelectedItem(activeAsset.getUser().toComboBoxString());
+            genericCells.add(assetAssociatedUserCB);
                 assetVendorCB.setEditable(true);
-            genericCells.add(assetVendorCB,2,0);                        // Vendor           | Model     | Serial #
-            genericCells.add(modelField,2,1);                           
-            genericCells.add(serialField,2,2);
+                assetVendorCB.setSelectedItem(vendorAsString(activeAsset.getAssetVendor()));
+            genericCells.add(assetVendorCB);
+            genericCells.add(modelField);
+            genericCells.add(serialField);
 
             if(activeAsset.getAssetType().equals(assetTypes.LAPTOP)){
                 //Placing the text fields for -LAPTOP CONDITIONS-
                     assetLaptopAirCardCarrierCB.setEditable(true);
-                laptopCells.add(assetLaptopAirCardCarrierCB,0,0);
-                laptopCells.add(phoneField,1,0);
-                laptopCells.add(imeiField,1,1);
-                laptopCells.add(simField,1,2);
+                laptopCells.add(assetLaptopAirCardCarrierCB);
+                laptopCells.add(phoneField);
+                laptopCells.add(imeiField);
+                laptopCells.add(simField);
                 content_asset_removal_laptopCells = true;
             }else{
                 content_asset_removal_laptopCells = false;
@@ -598,7 +600,7 @@ public class GUIController {
 
             if(activeAsset.getInvStat().equals(statusTypes.DAMAGED)){
                 //Placing the text fields for -DAMAGE CONDITIONS-
-                damagedCells.add(repairButtonOptionsPanel,0,0);
+                damagedCells.add(repairButtonOptionsPanel);
                 damagedCells.add(repairDateField);
                 damagedCells.add(damageDescriptionArea);
                 content_asset_removal_damagedCells = true;
@@ -804,6 +806,37 @@ public class GUIController {
 
     public void setActiveAsset(Asset activeAsset){
         this.activeAsset = activeAsset;
+    }
+
+    private String invStatAsString(statusTypes stat){
+        switch(stat){
+            case ASSIGNED: return "Assigned";
+            case DISPOSED: return "Disposed";
+            case RETIRED: return "Retired";
+            case LOANED: return "Loaned";
+            case DAMAGED: return "Damaged";
+            case MISSING: return "Missing";
+            case INSTOCK: return "In stock";
+            default: return "None";
+        }
+    }
+
+    private String vendorAsString(vendors ven){
+        switch(ven){
+            case DELL: return "DELL";
+            case PANASONIC: return "Panasonic";
+            case LENOVO: return "Lenovo";
+            case HP: return "HP";
+            case VERIZON: return "Verizon";
+            case ATandT: return "AT&T";
+            case XEROX: return "Xerox";
+            case ASUS: return "Asus";
+            case CISCO: return "Cisco";
+            case CANNON: return "Cannon";
+            case LEXMARK: return "Lexmark";
+            case LG: return "LG";
+            default: return "None";
+        }
     }
 
 

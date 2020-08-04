@@ -311,6 +311,9 @@ class Driver{
                     if(!userAsString.equals("")){
                         User associatedUser = callUserHelperClass(userAsString);
                         toReturn.setUser(associatedUser);
+                    }else{
+                        User nullSet = new User("None", "None", employmentStatus.NONE);
+                        toReturn.setUser(nullSet);
                     }
                         System.out.println("SETTING USER . . . USER SET");
                 toReturn.setAssetVendor(ssh.venIntToVen(vendorAsInt));
@@ -376,6 +379,7 @@ class Driver{
             boolean userFirstNull = false, userLastNull = false, empStatNull = false;
             boolean allFirstNull = false, allLastNull = false, allStatsNull = false;
 
+                System.out.println("Checking the non-evna user database");
             //Not necessary for methods that will not be returning anything
             while(rs.next()){
                 //Any returning statements go here
@@ -398,6 +402,7 @@ class Driver{
 
                 //Checks through the second database (EVNA - ADUC-LINKED)
                 if(userFirstNull||userLastNull||empStatNull){
+                    System.out.println("User not found in the non-evna. Checking EVNA");
                     evnaRS = evnaStmt.executeQuery(ssh.reqUserInfoHelper(empNo,true));
                     while(evnaRS.next()){
                         userFirst = rs.getString("drvNameFirst");
@@ -428,6 +433,7 @@ class Driver{
             //Close the connection for network security and bandwith reduction
             conn.close();
 
+            System.out.println("Returning the user to callAsset");
             //Return the user
             return toReturn;
         }catch(Exception e){

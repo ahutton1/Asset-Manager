@@ -38,10 +38,9 @@ public class User implements Serializable{
     public void setEmpNo(int empNo){this.empNo = empNo;}
     public void setEmpStat(employmentStatus empStat){this.empStat = empStat;}
 
-    public String toListString(){
-        return (lastName + ", " + firstName + " : " + empStat);
-    }
+    public String toListString(){ return (lastName + ", " + firstName + " : " + empStat); }
 
+    public String toComboBoxString(){ return (lastName + ", " + firstName); }
 
     public String getFirstName(){return firstName;}
     public String getLastName(){return lastName;}
