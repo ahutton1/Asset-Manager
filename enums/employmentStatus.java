@@ -6,5 +6,5 @@ package enums;
 /*  Class that represents the different status' that an employee of URMHC can be
 */
 public enum employmentStatus {
-    ACTIVE, LOA, TERMINATED, NONE;
+    ACTIVE, LOA, TERMINATED, OPERATIONS, NONE;
 }

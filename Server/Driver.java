@@ -707,14 +707,17 @@ class Driver{
             case "terminated": return employmentStatus.TERMINATED;
             case "termed": return employmentStatus.TERMINATED;
             case "term": return employmentStatus.TERMINATED;
+            case "t": return employmentStatus.TERMINATED;
             case "loa": return employmentStatus.LOA;
             case "leave": return employmentStatus.LOA;
             case "leave of absence": return employmentStatus.LOA;
+            case "l": return employmentStatus.LOA;
+            case "a": return employmentStatus.ACTIVE;
             case "active": return employmentStatus.ACTIVE;
+            case "o": return employmentStatus.OPERATIONS;
             default: System.out.println("Error in reading the user employment status string.");
-                break;
+                     return employmentStatus.NONE;
         }
-        return null;
     }
 
     /**

@@ -183,7 +183,7 @@ public class sqlStatementHandler {
      * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
      */
     public String reqUserList(AssetRequest<?> request){
-        String sqlStatement = "SELECT drvNameLast, drvNameFirst "/*, drvEmplStatus "*/ + "FROM tblUsers_NonUP";
+        String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmplStatus FROM tblUsers_NonUP";
         sqlList incomingData = (sqlList)request.getData();
         if(incomingData.getFirstType().equals(sqlList.searchType.BASIC)){
             //No filter or search term is applied, so just send the most basic data of everything
@@ -221,7 +221,7 @@ public class sqlStatementHandler {
      */
     public String reqUserListAnnex(AssetRequest<?> request){
         //TODO: Include joint searching of both the tblUsers and tblUsers_NonUP tables
-        String sqlStatement = "SELECT drvNameLast, drvNameFirst " /*, drvEmplStatus*/ + "FROM EVNA_tbl";
+        String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmplStatus FROM EVNA_tbl";
         sqlList incomingData = (sqlList)request.getData();
         if(incomingData.getFirstType().equals(sqlList.searchType.BASIC)){
             //No filter or search term is applied, so just send the most basic data of everything

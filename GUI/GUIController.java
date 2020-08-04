@@ -84,6 +84,7 @@ public class GUIController {
     private ArrayList<Asset> activeAssetsInList;
     private ArrayList<User> activeUsersInList;
     DefaultListModel listModel = new DefaultListModel();
+    contentListSelectionListener clsl = new contentListSelectionListener(this);
 
     /**
      * Content Pane Contents - Asset
@@ -185,6 +186,7 @@ public class GUIController {
     //Removal booleans
     Boolean content_asset_removal_laptopCells = false;
     Boolean content_asset_removal_damagedCells = false;
+    Boolean firstRun = true;
 
     /**
      * Testing suite used to test out the GUI without having to initialize client
@@ -471,7 +473,6 @@ public class GUIController {
             for(int x = activeAssetsInList.size()-1; x > 0; x--){ activeAssetsInList.remove(x); }          //Switch to removal function
         //activeUsersInList = null;      
             for(int y = activeUsersInList.size()-1; y > 0; y--){ activeUsersInList.remove(y); }            //Switch to removal function
-        contentListSelectionListener clsl = new contentListSelectionListener(this);
         this.contents.removeListSelectionListener(clsl);
             System.out.println(listModel.getSize());                                        //To remove
             System.out.println(this.listModel);                                             //To remove
@@ -502,12 +503,15 @@ public class GUIController {
         System.out.println("Recon 2");
         if(!listModel.get(0).equals(null)){
             System.out.println("Recon 4");
-            System.out.println(listModel.get(0));
-            listModel.remove(0);
-            System.out.println(listModel.get(0));
+            if(!firstRun){
+                listModel.remove(0);                //Causing the event listener to activate
+            }else{
+                firstRun = false;
+            }
+            
         }
         System.out.println("Recon 3");
-        this.contents.addListSelectionListener(new contentListSelectionListener(this));
+        this.contents.addListSelectionListener(clsl);
         this.contents.setSelectedIndex(0);
         //this.contents.addListSelectionListener(clsl);
     }
@@ -552,7 +556,7 @@ public class GUIController {
         updateContentPanelArchiveString = type;
 
         //Adding all of the necessary pieces after the removal of old information
-        if(type.equals("Asset")){
+        if(/*type.equals("Asset")*/ current_group.equals(asset_search)){
             //An asset is to be shown to the screen
 
             //Declarations
