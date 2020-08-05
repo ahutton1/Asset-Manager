@@ -40,7 +40,12 @@ public class User implements Serializable{
 
     public String toListString(){ return (lastName + ", " + firstName + " : " + empStat); }
 
-    public String toComboBoxString(){ return (lastName + ", " + firstName); }
+    public String toComboBoxString(){
+        if(lastName == null || firstName == null){
+            return ("None, None");
+        }
+        return (lastName + ", " + firstName); 
+    }
 
     public String getFirstName(){return firstName;}
     public String getLastName(){return lastName;}

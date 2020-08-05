@@ -411,6 +411,7 @@ public class GUIController {
         for(int i = 0; i < incomingRequest.getUserList().size(); i++){
             rosetta.add(incomingRequest.getUserList().get(i).getLastName() + ", " + incomingRequest.getUserList().get(i).getFirstName());
         }
+        rosetta.add("None, None");
 
         //Translation of the rosetta to a usable information type
         assetAssociatedUserCB_list = new String[rosetta.size()];
@@ -475,7 +476,6 @@ public class GUIController {
             for(int y = activeUsersInList.size()-1; y > 0; y--){ activeUsersInList.remove(y); }            //Switch to removal function
         this.contents.removeListSelectionListener(clsl);
             System.out.println(listModel.getSize());                                        //To remove
-            System.out.println(this.listModel);                                             //To remove
         for(int i = listModel.getSize()-1; i > 0; i--){ listModel.remove(i); }
         
             System.out.println("Here");
@@ -504,7 +504,7 @@ public class GUIController {
         if(!listModel.get(0).equals(null)){
             System.out.println("Recon 4");
             if(!firstRun){
-                listModel.remove(0);                //Causing the event listener to activate
+                listModel.remove(0);
             }else{
                 firstRun = false;
             }
@@ -553,7 +553,7 @@ public class GUIController {
         }
 
         //Set current type string as the old one for future removal
-        updateContentPanelArchiveString = type;
+        //updateContentPanelArchiveString = type;
 
         //Adding all of the necessary pieces after the removal of old information
         if(/*type.equals("Asset")*/ current_group.equals(asset_search)){
@@ -578,10 +578,20 @@ public class GUIController {
                 assetInventoryStatusCB.setSelectedItem(invStatAsString(activeAsset.getInvStat()));
             genericCells.add(assetInventoryStatusCB);
                 assetAssociatedUserCB.setEditable(true);
-                assetAssociatedUserCB.setSelectedItem(activeAsset.getUser().toComboBoxString());
+                User userNullCheck = activeAsset.getUser();
+                if(userNullCheck == null){
+                    assetAssociatedUserCB.setSelectedItem("None, None");
+                }else{
+                    assetAssociatedUserCB.setSelectedItem(activeAsset.getUser().toComboBoxString());
+                }
             genericCells.add(assetAssociatedUserCB);
                 assetVendorCB.setEditable(true);
-                assetVendorCB.setSelectedItem(vendorAsString(activeAsset.getAssetVendor()));
+                vendors vendorNullCheck = activeAsset.getAssetVendor();
+                if(vendorNullCheck == null){
+                    assetVendorCB.setSelectedItem("None");
+                }else{
+                    assetVendorCB.setSelectedItem(vendorAsString(activeAsset.getAssetVendor()));
+                }
             genericCells.add(assetVendorCB);
             genericCells.add(modelField);
             genericCells.add(serialField);
@@ -598,17 +608,20 @@ public class GUIController {
                 content_asset_removal_laptopCells = false;
             }
 
-            if(activeAsset.getInvStat().equals(statusTypes.DAMAGED)){
-                //Placing the text fields for -DAMAGE CONDITIONS-
-                damagedCells.add(repairButtonOptionsPanel);
-                damagedCells.add(repairDateField);
-                damagedCells.add(damageDescriptionArea);
-                content_asset_removal_damagedCells = true;
-            }else{
-                content_asset_removal_damagedCells = false;
+            statusTypes invStatNullCheck = activeAsset.getInvStat();
+            if(invStatNullCheck != null){
+                if(activeAsset.getInvStat().equals(statusTypes.DAMAGED)){
+                    //Placing the text fields for -DAMAGE CONDITIONS-
+                    damagedCells.add(repairButtonOptionsPanel);
+                    damagedCells.add(repairDateField);
+                    damagedCells.add(damageDescriptionArea);
+                    content_asset_removal_damagedCells = true;
+                }else{
+                    content_asset_removal_damagedCells = false;
+                }
             }
 
-            
+            updateContentPanelArchiveString = "Asset";
 
         }else{
             //A user is to be shown to the screen
@@ -622,6 +635,8 @@ public class GUIController {
             genericCells.add(firstNameField,0,0);
             genericCells.add(lastNameField,0,1);
             genericCells.add(deptCodeField,0,2);
+
+            updateContentPanelArchiveString = "User";
 
         }
 
@@ -809,15 +824,19 @@ public class GUIController {
     }
 
     private String invStatAsString(statusTypes stat){
-        switch(stat){
-            case ASSIGNED: return "Assigned";
-            case DISPOSED: return "Disposed";
-            case RETIRED: return "Retired";
-            case LOANED: return "Loaned";
-            case DAMAGED: return "Damaged";
-            case MISSING: return "Missing";
-            case INSTOCK: return "In stock";
-            default: return "None";
+        if(stat!=null){
+            switch(stat){
+                case ASSIGNED: return "Assigned";
+                case DISPOSED: return "Disposed";
+                case RETIRED: return "Retired";
+                case LOANED: return "Loaned";
+                case DAMAGED: return "Damaged";
+                case MISSING: return "Missing";
+                case INSTOCK: return "In Stock";
+                default: return "None";
+            }
+        }else{
+            return "None";
         }
     }
 

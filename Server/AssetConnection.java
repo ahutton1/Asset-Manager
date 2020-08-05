@@ -68,7 +68,7 @@ public abstract class AssetConnection extends Thread {
      */
     public void sendRequest(AssetRequest<?> request){
         try{
-            out.writeUnshared(request);
+            out.writeObject(request);
             out.flush();
             this.sleep(SLEEP_MS);
         }catch(Exception e){
