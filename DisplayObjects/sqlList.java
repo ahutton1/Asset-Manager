@@ -82,6 +82,10 @@ public class sqlList implements Serializable{
         this.searchTermOne = steo;
     }
 
+        public void setFirstType(searchType searchTypeOne){ this.searchTypeOne = searchTypeOne; }
+
+        public void setFirstTerm(String searchTermOne){ this.searchTermOne = searchTermOne; }
+
         //Getters
         public searchType getFirstType(){return searchTypeOne;}
 

@@ -52,6 +52,7 @@ public class GUIController {
     /**
      * Search Panel Contents - Assets
      */
+    private JRadioButton asset_search_none;
     private JRadioButton asset_search_compName;
     private JRadioButton asset_search_assetNumber;
     private JRadioButton asset_search_assetType;
@@ -62,10 +63,14 @@ public class GUIController {
     /**
      * Search Panel Contents - Users
      */
+    private JRadioButton user_search_none;
     private JRadioButton user_search_firstName;
     private JRadioButton user_search_lastName;
     private JRadioButton user_search_empStat;
     private ButtonGroup user_search;
+
+    private JTextField searchBar;
+    private JButton searchCommandBtn;
 
     /**
      * Controller for button groups
@@ -241,6 +246,10 @@ public class GUIController {
         window.getContentPane().add(navPanel);
 
         // Search panel initialization
+        
+        asset_search_none = new JRadioButton("No Filter");
+        asset_search_none.setActionCommand("asset_search_none_radBtn");
+        asset_search_none.addActionListener(new ButtonClickListener());
         asset_search_compName = new JRadioButton("Computer Name");
         asset_search_compName.setActionCommand("asset_search_compName_radBtn");
         asset_search_compName.addActionListener(new ButtonClickListener());
@@ -258,12 +267,16 @@ public class GUIController {
         asset_search_phoneNumber.addActionListener(new ButtonClickListener());
 
         asset_search = new ButtonGroup();
+        asset_search.add(asset_search_none);
         asset_search.add(asset_search_compName);
         asset_search.add(asset_search_assetNumber);
         asset_search.add(asset_search_assetType);
         asset_search.add(asset_search_model);
         asset_search.add(asset_search_phoneNumber);
 
+        user_search_none = new JRadioButton("No Filter");
+        user_search_none.setActionCommand("user_search_none_radBtn");
+        user_search_none.addActionListener(new ButtonClickListener());
         user_search_firstName = new JRadioButton("First Name");
         user_search_firstName.setActionCommand("user_search_firstName_radBtn");
         user_search_firstName.addActionListener(new ButtonClickListener());
@@ -275,6 +288,7 @@ public class GUIController {
         user_search_empStat.addActionListener(new ButtonClickListener());
 
         user_search = new ButtonGroup();
+        user_search.add(user_search_none);
         user_search.add(user_search_firstName);
         user_search.add(user_search_lastName);
         user_search.add(user_search_empStat);
@@ -287,12 +301,23 @@ public class GUIController {
         radioButtonLayout = new FlowLayout(FlowLayout.LEFT);
         button_container.setLayout(radioButtonLayout);
         button_container.setBackground(Color.BLUE);
+
+        searchBar = new JTextField();
+        Dimension searchBarDims = new Dimension((int) screenSize.getWidth() / 3 - 125, 25);
+        searchBar.setPreferredSize(searchBarDims);
+        button_container.add(searchBar);
+
+        searchCommandBtn = new JButton("Search");
+        searchCommandBtn.setActionCommand("Search_Btn_Called");
+        searchCommandBtn.addActionListener(new ButtonClickListener());
+        button_container.add(searchCommandBtn);
+
+        button_container.add(asset_search_none);
         button_container.add(asset_search_compName);
         button_container.add(asset_search_assetNumber);
         button_container.add(asset_search_assetType);
         button_container.add(asset_search_model);
         button_container.add(asset_search_phoneNumber);
-
 
         // LIST PANEL INITIALIZATION . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
         listPanelDims = new Dimension((int) screenSize.getWidth() / 3 - 30, (int) screenSize.getHeight() / 10 * 8);
@@ -430,12 +455,26 @@ public class GUIController {
             if (command.equals("assetsBtn_viewAssetListBtn")) {
                 // Do nothing
             } else {
+                /*asset_search_assetNumber.setSelected(false);
+                asset_search_assetType.setSelected(false);
+                asset_search_compName.setSelected(false);
+                asset_search_model.setSelected(false);
+                asset_search_phoneNumber.setSelected(false);*/
+
+                current_group.setSelected(asset_search_assetNumber.getModel(), false);
+                current_group.setSelected(asset_search_assetType.getModel(), false);
+                current_group.setSelected(asset_search_compName.getModel(), false);
+                current_group.setSelected(asset_search_model.getModel(), false);
+                current_group.setSelected(asset_search_phoneNumber.getModel(), false);
+
+                button_container.remove(asset_search_none);
                 button_container.remove(asset_search_assetNumber);
                 button_container.remove(asset_search_assetType);
                 button_container.remove(asset_search_compName);
                 button_container.remove(asset_search_model);
                 button_container.remove(asset_search_phoneNumber);
 
+                button_container.add(user_search_none);
                 button_container.add(user_search_firstName);
                 button_container.add(user_search_lastName);
                 button_container.add(user_search_empStat);
@@ -447,10 +486,20 @@ public class GUIController {
             if (command.equals("usersBtn_viewUserListBtn")) {
                 // Do nothing
             } else {
+                /*user_search_firstName.setSelected(false);
+                user_search_lastName.setSelected(false);
+                user_search_empStat.setSelected(false);*/
+
+                current_group.setSelected(user_search_firstName.getModel(), false);
+                current_group.setSelected(user_search_lastName.getModel(), false);
+                current_group.setSelected(user_search_empStat.getModel(), false);
+
+                button_container.remove(user_search_none);
                 button_container.remove(user_search_firstName);
                 button_container.remove(user_search_lastName);
                 button_container.remove(user_search_empStat);
 
+                button_container.add(asset_search_none);
                 button_container.add(asset_search_compName);
                 button_container.add(asset_search_assetNumber);
                 button_container.add(asset_search_assetType);
@@ -552,9 +601,6 @@ public class GUIController {
                 break;
         }
 
-        //Set current type string as the old one for future removal
-        //updateContentPanelArchiveString = type;
-
         //Adding all of the necessary pieces after the removal of old information
         if(/*type.equals("Asset")*/ current_group.equals(asset_search)){
             //An asset is to be shown to the screen
@@ -651,6 +697,7 @@ public class GUIController {
      * Handles all user-initiated events that occur on the GUI
      */
     private class ButtonClickListener implements ActionListener {
+        sqlList searcherPlaceholder = new sqlList();
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -686,27 +733,54 @@ public class GUIController {
                     break;
                 case "asset_search_compName_radBtn":
                     System.out.println("Asset Computer Name Search Type Recognized");
+                    searcherPlaceholder = setActiveListType(searcherPlaceholder);
                     break;
                 case "asset_search_assetNumber_radBtn":
                     System.out.println("Asset ID Number Search Type Recognized");
+                    searcherPlaceholder = setActiveListType(searcherPlaceholder);
                     break;
                 case "asset_search_assetType_radBtn":
                     System.out.println("Asset Type Search Type Recognized");
+                    searcherPlaceholder = setActiveListType(searcherPlaceholder);
                     break;
                 case "asset_search_model_radBtn":
                     System.out.println("Asset Model Search Type Recognized");
+                    searcherPlaceholder = setActiveListType(searcherPlaceholder);
                     break;
                 case "asset_search_phoneNumber_radBtn":
                     System.out.println("Asset Phone Number Search Type Recognized");
+                    searcherPlaceholder = setActiveListType(searcherPlaceholder);
                     break;
                 case "user_search_firstName_radBtn":
                     System.out.println("User First Name Search Type Recognized");
+                    searcherPlaceholder = setActiveListType(searcherPlaceholder);
                     break;
                 case "user_search_lastName_radBtn":
                     System.out.println("User Last Name Search Type Recognized");
+                    searcherPlaceholder = setActiveListType(searcherPlaceholder);
                     break;
                 case "user_search_empStat_radBtn":
                     System.out.println("User Employment Status Search Type Recognized");
+                    searcherPlaceholder = setActiveListType(searcherPlaceholder);
+                    break;
+                case "asset_search_none_radBtn":
+                    System.out.println("Asset Search No Filter Type Recognized");
+                    searcherPlaceholder = setActiveListType(searcherPlaceholder);
+                    break;
+                case "user_search_none_radBtn":
+                    System.out.println("user Search No Filter Type Recognized");
+                    searcherPlaceholder = setActiveListType(searcherPlaceholder);
+                    break;
+                case "Search_Btn_Called":
+                    searcherPlaceholder = setActiveListType(searcherPlaceholder);
+                    searcherPlaceholder.setFirstTerm(searchBar.getText());
+                    if(current_group.equals(asset_search)){
+                        AssetRequest<sqlList> searcherPlaceholderRequest = new AssetRequest<>(AssetRequest.RequestType.CALL_ASSET_LIST, searcherPlaceholder);
+                        clDr.sendRequest(searcherPlaceholderRequest);
+                    }else{
+                        AssetRequest<sqlList> searcherPlaceholderRequest = new AssetRequest<>(AssetRequest.RequestType.CALL_USER_LIST, searcherPlaceholder);
+                        clDr.sendRequest(searcherPlaceholderRequest);
+                    }
                     break;
                 default:
                     System.out.println(command);
@@ -781,38 +855,40 @@ public class GUIController {
             }
         }
 
-        System.out.println(activeButton);
+        System.out.println("Active button: " + activeButton);
         switch(activeButton){
             case "Computer Name":
-                sqllist.searchTypeOne = sqlList.searchType.ASSET_NAME;
+                sqllist.setFirstType(sqlList.searchType.ASSET_NAME);
                 break;
             case "Asset Number":
-                sqllist.searchTypeOne = sqlList.searchType.ASSET_ID;
+                sqllist.setFirstType(sqlList.searchType.ASSET_ID);
                 break;
             case "Asset Type":
-                sqllist.searchTypeOne = sqlList.searchType.ASSET_TYPE;
+                sqllist.setFirstType(sqlList.searchType.ASSET_TYPE);
                 break;
             case "Model":
-                sqllist.searchTypeOne = sqlList.searchType.ASSET_MODEL;
+                sqllist.setFirstType(sqlList.searchType.ASSET_MODEL);
                 break;
             case "Phone Number":
-                sqllist.searchTypeOne = sqlList.searchType.ASSET_PHONE_NUMBER;
+                sqllist.setFirstType(sqlList.searchType.ASSET_PHONE_NUMBER);
                 break;
             case "First Name":
-                sqllist.searchTypeOne = sqlList.searchType.USER_FIRST;
+                sqllist.setFirstType(sqlList.searchType.USER_FIRST);
                 break;
             case "Last Name":
-                sqllist.searchTypeOne = sqlList.searchType.USER_LAST;
+                sqllist.setFirstType(sqlList.searchType.USER_LAST);
                 break;
             case "Employment Status":
-                sqllist.searchTypeOne = sqlList.searchType.USER_STAT;
+                sqllist.setFirstType(sqlList.searchType.USER_STAT);
                 break;
-            case "":
+            case "No Filter":
                 System.out.println("Basic list setting set");
-                sqllist.searchTypeOne = sqlList.searchType.BASIC;
+                sqllist.setFirstType(sqlList.searchType.BASIC);
                 break;
             default:
                 System.out.println("Error in how the system read which button is active for the list");
+                System.out.println("Basic list setting set");
+                sqllist.setFirstType(sqlList.searchType.BASIC);
                 break;
         }
 

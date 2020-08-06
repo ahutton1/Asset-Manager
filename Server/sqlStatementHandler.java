@@ -54,35 +54,40 @@ public class sqlStatementHandler {
     public String reqAssetList(AssetRequest<?> request){
         String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID FROM tblAssets";
         sqlList incomingData = (sqlList)request.getData();
+        System.out.println("INCOMING DATA: DATA TYPE 01 . . . " + incomingData.getFirstType());
+        System.out.println("INCOMING DATA: DATA TERM 01 . . . " + incomingData.getFirstTerm());
         if(incomingData.getFirstType().equals(sqlList.searchType.BASIC)){
             //No filter or search term is applied, so just send the most basic data of everything
+            System.out.println(sqlStatement);
             return sqlStatement;
         }
         switch(incomingData.getFirstType()){
             case BASIC:
                 break;
             case ASSET_NAME:
-                sqlStatement = (sqlStatement + " WHERE Asset_Name = ('" + incomingData.getFirstTerm() + "')" );
+                sqlStatement = (sqlStatement + " WHERE Asset_Name LIKE ('%" + incomingData.getFirstTerm() + "%')" );
                 break;
             case ASSET_ID:
-                sqlStatement = (sqlStatement + " WHERE AssetID = ('" + incomingData.getFirstTerm() + "')" );
+                sqlStatement = (sqlStatement + " WHERE AssetID LIKE ('%" + incomingData.getFirstTerm() + "%')" );
                 break;
             case ASSET_TYPE:
-                sqlStatement = (sqlStatement + " WHERE AssetTypeID = ('" + findEquivID(incomingData.getFirstTerm()) + "')" );
+                sqlStatement = (sqlStatement + " WHERE Asset_TypeID LIKE ('%" + findEquivID(incomingData.getFirstTerm()) + "%')" );
                 break;
             case ASSET_USER:
-                sqlStatement = (sqlStatement + " WHERE _ = ('" + incomingData.getFirstTerm() + "')" );
+                //TODO: Pull empNos and search the database via that
+                sqlStatement = (sqlStatement + " WHERE _ LIKE ('%" + incomingData.getFirstTerm() + "%')" );
                 break;
             case ASSET_STAT_TYPE:
-                sqlStatement = (sqlStatement + " WHERE Inventory_StatusID = ('" + invStatToID(incomingData.getFirstTerm()) + "')" );
+                sqlStatement = (sqlStatement + " WHERE Inventory_StatusID LIKE ('%" + invStatToID(incomingData.getFirstTerm()) + "%')" );
                 break;
             case ASSET_PHONE_NUMBER:
-                sqlStatement = (sqlStatement + " WHERE Phone_Number = ('" + incomingData.getFirstTerm() + "')" );
+                sqlStatement = (sqlStatement + " WHERE Phone_Number LIKE ('%" + incomingData.getFirstTerm() + "%')" );
                 break;
             default:
                 System.err.println("Error in reading data type for asset list in translator");
                 break;
         }
+        System.out.println(sqlStatement);
         return sqlStatement;
     }
 
@@ -191,13 +196,13 @@ public class sqlStatementHandler {
         }
         switch(incomingData.getFirstType()){
             case USER_FIRST:
-                sqlStatement = (sqlStatement + " WHERE drvNameFirst = ('" + handleName(incomingData.getFirstTerm()) + "')" );
+                sqlStatement = (sqlStatement + " WHERE drvNameFirst LIKE ('%" + handleName(incomingData.getFirstTerm()) + "%')" );
                 break;
             case USER_LAST:
-                sqlStatement = (sqlStatement + " WHERE drvNameLast = ('" + handleName(incomingData.getFirstTerm()) + "')" );
+                sqlStatement = (sqlStatement + " WHERE drvNameLast LIKE ('%" + handleName(incomingData.getFirstTerm()) + "%')" );
                 break;
             case USER_STAT:
-                sqlStatement = (sqlStatement + " WHERE drvEmplStatus = ('" + incomingData.getFirstTerm() + "')" );
+                sqlStatement = (sqlStatement + " WHERE drvEmplStatus LIKE ('%" + incomingData.getFirstTerm() + "%')" );
                 break;
             default:
                 break;
@@ -229,13 +234,13 @@ public class sqlStatementHandler {
         }
         switch(incomingData.getFirstType()){
             case USER_FIRST:
-                sqlStatement = (sqlStatement + " WHERE drvNameFirst = ('" + handleName(incomingData.getFirstTerm()) + "')" );
+                sqlStatement = (sqlStatement + " WHERE drvNameFirst LIKE ('%" + handleName(incomingData.getFirstTerm()) + "%')" );
                 break;
             case USER_LAST:
-                sqlStatement = (sqlStatement + " WHERE drvNameLast = ('" + handleName(incomingData.getFirstTerm()) + "')" );
+                sqlStatement = (sqlStatement + " WHERE drvNameLast LIKE ('%" + handleName(incomingData.getFirstTerm()) + "%')" );
                 break;
             case USER_STAT:
-                sqlStatement = (sqlStatement + " WHERE drvEmplStatus = ('" + incomingData.getFirstTerm() + "')" );
+                sqlStatement = (sqlStatement + " WHERE drvEmplStatus LIKE ('%" + incomingData.getFirstTerm() + "%')" );
                 break;
             default:
                 break;
