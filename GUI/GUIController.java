@@ -455,17 +455,8 @@ public class GUIController {
             if (command.equals("assetsBtn_viewAssetListBtn")) {
                 // Do nothing
             } else {
-                /*asset_search_assetNumber.setSelected(false);
-                asset_search_assetType.setSelected(false);
-                asset_search_compName.setSelected(false);
-                asset_search_model.setSelected(false);
-                asset_search_phoneNumber.setSelected(false);*/
-
-                current_group.setSelected(asset_search_assetNumber.getModel(), false);
-                current_group.setSelected(asset_search_assetType.getModel(), false);
-                current_group.setSelected(asset_search_compName.getModel(), false);
-                current_group.setSelected(asset_search_model.getModel(), false);
-                current_group.setSelected(asset_search_phoneNumber.getModel(), false);
+                asset_search.clearSelection();
+                current_group.clearSelection();
 
                 button_container.remove(asset_search_none);
                 button_container.remove(asset_search_assetNumber);
@@ -486,13 +477,8 @@ public class GUIController {
             if (command.equals("usersBtn_viewUserListBtn")) {
                 // Do nothing
             } else {
-                /*user_search_firstName.setSelected(false);
-                user_search_lastName.setSelected(false);
-                user_search_empStat.setSelected(false);*/
-
-                current_group.setSelected(user_search_firstName.getModel(), false);
-                current_group.setSelected(user_search_lastName.getModel(), false);
-                current_group.setSelected(user_search_empStat.getModel(), false);
+                user_search.clearSelection();
+                current_group.clearSelection();
 
                 button_container.remove(user_search_none);
                 button_container.remove(user_search_firstName);
@@ -710,7 +696,6 @@ public class GUIController {
                     current_group = asset_search;
                     sqlList sqllist = new sqlList();
                     sqllist = setActiveListType(sqllist);
-                    // TODO set the search term
                     AssetRequest<sqlList> request = new AssetRequest<>(AssetRequest.RequestType.CALL_ASSET_LIST, sqllist);
                     clDr.sendRequest(request);
                     break;
@@ -723,7 +708,6 @@ public class GUIController {
                     current_group = user_search;
                     sqlList sqllist_user = new sqlList();
                     sqllist_user = setActiveListType(sqllist_user);
-                    //TODO set the search term
                     AssetRequest<sqlList> uListReq = new AssetRequest<>(AssetRequest.RequestType.CALL_USER_LIST, sqllist_user);
                     System.out.println("Sending the request to the client driver");
                     clDr.sendRequest(uListReq);
