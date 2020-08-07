@@ -501,6 +501,8 @@ class Driver{
      * statement.
      */
     public AssetRequest<sqlList> callAssetList(AssetRequest<?> incomingRequest){
+        System.out.println("RECEIVING SQLLIST FROM SEARCH_BTN_CALLED PRE TYPE: " + ((sqlList)incomingRequest.getData()).getFirstType());
+        System.out.println("RECEIVING SQLLIST FROM SEARCH_BTN_CALLED PRE TERM: " + ((sqlList)incomingRequest.getData()).getFirstTerm());
         try{
             //Establish a connection with the specific database
             Connection conn = DriverManager.getConnection(servURL);

@@ -758,6 +758,8 @@ public class GUIController {
                 case "Search_Btn_Called":
                     searcherPlaceholder = setActiveListType(searcherPlaceholder);
                     searcherPlaceholder.setFirstTerm(searchBar.getText());
+                    System.out.println("SENDING SQLLIST FROM SEARCH_BTN_CALLED PRE TYPE: " + searcherPlaceholder.getFirstType());
+                    System.out.println("SENDING SQLLIST FROM SEARCH_BTN_CALLED PRE TERM: " + searcherPlaceholder.getFirstTerm());
                     if(current_group.equals(asset_search)){
                         AssetRequest<sqlList> searcherPlaceholderRequest = new AssetRequest<>(AssetRequest.RequestType.CALL_ASSET_LIST, searcherPlaceholder);
                         clDr.sendRequest(searcherPlaceholderRequest);
@@ -800,12 +802,10 @@ public class GUIController {
                     //Assets list is active
                     System.out.println("vC Asset List status . . . ACTIVE");
                     System.out.println(source.contents.getSelectedIndex());
-                    //source.contents.setSelectedIndex(0);
                     source.activeAsset = source.activeAssetsInList.get(source.contents.getSelectedIndex());
                     search assetInfo = new search(activeAsset.getAssetName(),assetTypeToInt(activeAsset.getAssetType()),activeAsset.getAssetNumber());
                     AssetRequest<search> callAsset = new AssetRequest<search>(RequestType.CALL_ASSET,assetInfo);
                     clDr.sendRequest(callAsset);
-                    //source.activeAsset = clDr.receiveAsset();
                     source.updateContentPanel("Asset");
                 }
             }
