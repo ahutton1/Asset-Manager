@@ -763,6 +763,7 @@ public class GUIController {
                     if(current_group.equals(asset_search)){
                         AssetRequest<sqlList> searcherPlaceholderRequest = new AssetRequest<>(AssetRequest.RequestType.CALL_ASSET_LIST, searcherPlaceholder);
                         clDr.sendRequest(searcherPlaceholderRequest);
+                        System.out.println(searcherPlaceholderRequest.getData().getFirstTerm());
                     }else{
                         AssetRequest<sqlList> searcherPlaceholderRequest = new AssetRequest<>(AssetRequest.RequestType.CALL_USER_LIST, searcherPlaceholder);
                         clDr.sendRequest(searcherPlaceholderRequest);

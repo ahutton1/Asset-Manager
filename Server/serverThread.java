@@ -62,6 +62,7 @@ public class serverThread extends AssetConnection{
                         sendRequest(server.callUser(request));
                         break;
                     case CALL_ASSET_LIST:
+                        System.out.println(((sqlList)request.getData()).getFirstTerm());
                         AssetRequest<sqlList> homebound = server.callAssetList(request);
                         sendRequest(homebound);
                         break;
