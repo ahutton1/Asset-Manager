@@ -189,7 +189,7 @@ class Driver{
             search toRetMaster = (search)incomingRequest.getData();
                 System.out.println("SEARCH OBJECT 'TORET' CREATED");
             String toRetName = toRetMaster.assetName;
-            int toRetID = toRetMaster.assetID;
+            String toRetID = toRetMaster.assetNumber;
             int toRetTypeID = toRetMaster.typeID;
             assetTypes toRetType = ssh.assetTypeIDtoType(toRetTypeID);
                 System.out.println("TORETMASTER OBJECT FINISHED");
@@ -225,33 +225,28 @@ class Driver{
                 //Any returning statements go here
                 String assetName = rs.getString("Asset_Name");
                     if(rs.wasNull()){assetName = "";}
-                        System.out.println("ADDING ASSET NAME . . . DONE");
-                int assetNumber = rs.getInt("AssetID");
+                int assetNumber = Integer.parseInt(rs.getString("Asset_Number"));
                     if(rs.wasNull()){assetNumber = 0;}
-                        System.out.println("ADDING ASSET NUMBER . . . DONE");
+                int assetID = rs.getInt("AssetID");
+                    if(rs.wasNull()){assetID = 0;}
                 int assetTypeAsInt = rs.getInt("Asset_TypeID");
                     if(rs.wasNull()){assetTypeAsInt = 0;}
                     if(assetTypeAsInt == 4){ assetIsLaptop = true; }else{ assetIsLaptop = false; }
-                        System.out.println("ADDING ASSET TYPE . . . DONE");
                 int inventoryStatusAsInt = rs.getInt("Inventory_StatusID");
                     if(rs.wasNull()){inventoryStatusAsInt = 0;}
                     if(inventoryStatusAsInt == 8){ assetIsDamaged = true; }else{ assetIsDamaged = false; }
-                        System.out.println("ADDING INVENTORY STATUS . . . DONE");
                 String userAsString = rs.getString("drvEmpNo");
-                    if(rs.wasNull()){userAsString = "";}
-                        System.out.println("ADDING USER AS STRING . . . DONE");
+                    System.out.println(userAsString);
+                    if(rs.wasNull()){userAsString = "";
+                        System.out.println("Reseting the user string because it was read as null");}
                 int vendorAsInt = rs.getInt("VendorID");
                     if(rs.wasNull()){vendorAsInt = 0;}
-                        System.out.println("ADDING VENDOR . . . DONE");
                 String model = rs.getString("Model");
                     if(rs.wasNull()){model = "";}
-                        System.out.println("ADDING MODEL . . . DONE");
                 String serialNumber = rs.getString("Serial");
                     if(rs.wasNull()){serialNumber = "";}
-                        System.out.println("ADDING SERIAL NUMBER . . . DONE");
                 String imageDate = rs.getString("imageDate");
                     if(rs.wasNull()){imageDate = "";}
-                        System.out.println("ADDING IMAGE DATE . . . DONE");
 
                 //Laptops
                 int carrierAsInt = 0;
@@ -267,16 +262,12 @@ class Driver{
                     while(rsTwo.next()){
                         carrierAsInt = rsTwo.getInt("Carrier");
                         if(rsTwo.wasNull()){carrierAsInt = 0;}
-                            System.out.println("ASSET IS A LAPTOP: ADDING CARRIER . . . DONE");
                         phoneNumber = rsTwo.getString("Phone_Number");
                         if(rsTwo.wasNull()){phoneNumber = "";}
-                            System.out.println("ASSET IS A LAPTOP: ADDING PHONE NUMBER . . . DONE");
                         panasonicIMEI = rsTwo.getString("IMEI_ID");
                         if(rsTwo.wasNull()){panasonicIMEI = "";}
-                            System.out.println("ASSET IS A LAPTOP: ADDING IMEI . . . DONE");
                         simNumber = rsTwo.getString("SIM_Card");
                         if(rsTwo.wasNull()){simNumber= "";}
-                            System.out.println("ASSET IS A LAPTOP: ADDING SIM . . . DONE");
                     }
                     
                 }
@@ -294,13 +285,10 @@ class Driver{
                     while(rsThree.next()){
                         sentForRepairAsInt = rsThree.getInt("sentForRepair");
                         if(rsThree.wasNull()){sentForRepairAsInt = 0;}
-                            System.out.println("ASSET DAMAGED: ADDING SENT FOR REPAIR BOOLEAN . . . DONE");
                           dateSentForRepair = rsThree.getString("dateSentForRepair");
                         if(rsThree.wasNull()){dateSentForRepair = "";}
-                            System.out.println("ASSET DAMAGED: ADDING DATE SENT FOR REPAIR . . . DONE");
                         damageDescription = rsThree.getString("damageDescription");
                         if(rsThree.wasNull()){damageDescription = "";}
-                            System.out.println("ASSET DAMAGED: ADDING DESCRIPTION . . . DONE");
                     }
                     
                 }
@@ -357,7 +345,7 @@ class Driver{
      * Calls the SQL server to find a user's information based off of an associated employee number. Nulls are checked prior to calling this 
      * class, so the null case is handled inherently.
      */
-    public User callUserHelperClass(String empNo){
+    public User callUserHelperClass(String empNo){      //TODO : REFACTOR
         try{
             //Establish a connection with the specific database
             Connection conn = DriverManager.getConnection(servURL);
@@ -365,7 +353,7 @@ class Driver{
 
             //Create a placeholder for a concrete statement that will allow us to make and view a SELECT statement
             Statement stmt = conn.createStatement();
-            Statement evnaStmt = conn.createStatement();
+            Statement evnaStmt = evnaConn.createStatement();
 
             //Create a placeholder for the results from a given select query
             ResultSet rs;
@@ -385,16 +373,19 @@ class Driver{
                 //Any returning statements go here
                 //Checks through the first database (NON-ULTIPRO-USERS)
                 String userFirst = rs.getString("drvNameFirst");
+                System.out.println("Non-EVNA user first = " + userFirst);
                     if(rs.wasNull()){
                         userFirst = "";
                         userFirstNull = true;
                     }
                 String userLast = rs.getString("drvNameLast");
+                System.out.println("Non-EVNA user last = " + userLast);
                     if(rs.wasNull()){
                         userLast = "";
                         userLastNull = true;
                     }
                 String empStat = rs.getString("drvEmplStatus");
+                System.out.println("Non-EVNA user emp stat = " + empStat);
                     if(rs.wasNull()){
                         empStat = "";
                         empStatNull = true;
@@ -403,32 +394,44 @@ class Driver{
                 //Checks through the second database (EVNA - ADUC-LINKED)
                 if(userFirstNull||userLastNull||empStatNull){
                     System.out.println("User not found in the non-evna. Checking EVNA");
-                    evnaRS = evnaStmt.executeQuery(ssh.reqUserInfoHelper(empNo,true));
-                    while(evnaRS.next()){
-                        userFirst = rs.getString("drvNameFirst");
-                            if(rs.wasNull()){
-                                userFirst = "";
-                                allFirstNull = true;
-                            }
-                        userLast = rs.getString("drvNameLast");
-                            if(rs.wasNull()){
-                                userLast = "";
-                                allLastNull = true;
-                            }
-                        empStat = rs.getString("drvEmplStatus");
-                            if(rs.wasNull()){
-                                empStat = "";
-                                allStatsNull = true;
-                            }
-                    }
+                    
                 }
-
                 //Set the returned values
                 toReturn.setFirstName(userFirst);
                 toReturn.setLastName(userLast);
                 toReturn.setEmpStat(stringToEmp(empStat));
                 toReturn.setEmpNo(Integer.parseInt(empNo));
             }
+
+            if(!rs.next()){
+                evnaRS = evnaStmt.executeQuery(ssh.reqUserInfoHelper(empNo,true));
+                while(evnaRS.next()){
+                    String userFirst = evnaRS.getString("drvNameFirst");
+                    System.out.println("EVNA user first = " + userFirst);
+                        if(evnaRS.wasNull()){
+                            userFirst = "";
+                            allFirstNull = true;
+                        }
+                    String userLast = evnaRS.getString("drvNameLast");
+                    System.out.println("EVNA user last = " + userLast);
+                        if(evnaRS.wasNull()){
+                            userLast = "";
+                            allLastNull = true;
+                        }
+                    String empStat = evnaRS.getString("drvEmplStatus");
+                    System.out.println("EVNA user emp stat = " + empStat);
+                        if(evnaRS.wasNull()){
+                            empStat = "";
+                            allStatsNull = true;
+                        }
+                    //Set the returned values
+                    toReturn.setFirstName(userFirst);
+                    toReturn.setLastName(userLast);
+                    toReturn.setEmpStat(stringToEmp(empStat));
+                    toReturn.setEmpNo(Integer.parseInt(empNo));
+                }
+            }
+            
 
             //Close the connection for network security and bandwith reduction
             conn.close();
@@ -449,7 +452,7 @@ class Driver{
      * to the client. Utilizes the sqlStatementHandler class for assistance with creating the 
      * statement.
      */
-    public AssetRequest<User> callUser(AssetRequest<?> incomingRequest){
+    public AssetRequest<User> callUser(AssetRequest<?> incomingRequest){        //TODO : REFACTOR
         try{
             //Establish a connection with the specific database
             Connection conn = DriverManager.getConnection(servURL);
@@ -523,11 +526,11 @@ class Driver{
             while(rs.next()){
                 String Asset_Name = rs.getString("Asset_Name");
                     if(rs.wasNull()){Asset_Name = "VOID";}
-                int assetID = rs.getInt("AssetID");
-                    if(rs.wasNull()){assetID = 0;}
+                String assetNumberString = rs.getString("Asset_Number");
+                    if(rs.wasNull()){assetNumberString = "No number";}
                 int asset_typeID = rs.getInt("Asset_TypeID");
                     if(rs.wasNull()){asset_typeID = 0;}
-                sqllist.addAsset(new Asset(Asset_Name, assetID, toAssetType(asset_typeID)));
+                sqllist.addAsset(new Asset(Asset_Name, assetNumberString, toAssetType(asset_typeID)));
             }
 
             //Close the connection for network security and bandwith reduction
@@ -551,7 +554,7 @@ class Driver{
      * to the clent. Utilizes the sqlStatementHandler class for assistance with creating the
      * statement.
      */
-    public AssetRequest<sqlList> callUserList(AssetRequest<?> incomingRequest){
+    public AssetRequest<sqlList> callUserList(AssetRequest<?> incomingRequest){     //TODO : REFACTOR
         sqlList sqllist = (sqlList)incomingRequest.getData();
         //Non-UP users
         try{
@@ -702,6 +705,28 @@ class Driver{
 
         AssetRequest<sqlList> request = new AssetRequest<>(AssetRequest.RequestType.CALL_LOCAL_USER_LIST, sqllist);
         return request;
+    }
+
+    /**
+     * Takes asset information that is received from a client and pushes it to overwrite the asset with a matching
+     * internal ID number in the SQL table. Method of saving asset changes of assets that already exist. This does 
+     * NOT create a new asset when called.
+     * @param request
+     */
+    public void updateAsset(AssetRequest<?> request){
+        try{
+            Connection conn = DriverManager.getConnection(servURL);
+            Statement stmt = conn.createStatement();
+            ResultSet rs;
+            sqlStatementHandler ssh = new sqlStatementHandler();
+            rs = stmt.executeQuery(ssh.updateAssetInfo(request));
+            while(rs.next()){
+
+            }
+            conn.close();
+        }catch(Exception e){
+            
+        }
     }
 
     /**

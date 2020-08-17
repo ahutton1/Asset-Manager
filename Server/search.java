@@ -5,18 +5,18 @@ import java.io.Serializable;
 public class search implements Serializable{
 
     //Asset variables
-    public String assetName;
-    public int typeID, assetID;
+    public String assetName, assetNumber;
+    public int typeID;
 
     //User variables
     public String userFirst, userLast;
     public String empStat;
 
     //Used for asset searching in the content pane
-    public search(String assetName, int typeID, int assetID){
+    public search(String assetName, int typeID, String assetNumber){
         this.assetName = assetName;
         this.typeID = typeID;
-        this.assetID = assetID;
+        this.assetNumber = assetNumber;
     }
 
     //used for user searching in the content pane

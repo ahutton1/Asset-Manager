@@ -2,6 +2,7 @@ package Server;
 
 import java.lang.ProcessBuilder.Redirect.Type;
 
+import DisplayObjects.Asset;
 import DisplayObjects.sqlList;
 import enums.assetTypes;
 import enums.employmentStatus;
@@ -52,7 +53,7 @@ public class sqlStatementHandler {
      * @return A SQL statment in the form of a string that can be sent to the SQL Server requesting information
      */
     public String reqAssetList(AssetRequest<?> request){
-        String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID FROM tblAssets";
+        String sqlStatement = "SELECT Asset_Name, Asset_Number, Asset_TypeID FROM tblAssets";
         sqlList incomingData = (sqlList)request.getData();
         System.out.println("INCOMING DATA: DATA TYPE 01 . . . " + incomingData.getFirstType());
         System.out.println("INCOMING DATA: DATA TERM 01 . . . " + incomingData.getFirstTerm());
@@ -282,10 +283,12 @@ public class sqlStatementHandler {
      */
     public String reqUserInfoHelper(String empNo, boolean tableCase){
         if(tableCase){
-            String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmpNo, drvEmplStatus FROM EVNA_Tbl WHERE drvEmpNo = '" + empNo + "'";
+            String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmplStatus FROM EVNA_Tbl WHERE drvEmpNo = '" + empNo + "'";
+            System.out.println(sqlStatement);
             return sqlStatement;
         }else{
-            String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmpNo, drvEmplStatus FROM tblUsers_NonUP WHERE drvEmpNo = '" + empNo + "'" ;
+            String sqlStatement = "SELECT drvNameLast, drvNameFirst, drvEmplStatus FROM tblUsers_NonUP WHERE drvEmpNo = '" + empNo + "'" ;
+            System.out.println(sqlStatement);
             return sqlStatement;
         }
         
@@ -313,7 +316,7 @@ public class sqlStatementHandler {
          *      Date Imaged
          */
         search req = (search)request.getData();
-        String sqlStatement = "SELECT Asset_Name, AssetID, Asset_TypeID, Inventory_StatusID, drvEmpNo, VendorID, Model, Serial, imageDate FROM tblAssets WHERE (Asset_Name = '" + req.assetName + "') AND (AssetID = '" + req.assetID + "') AND (Asset_TypeID = '" + req.typeID + "')";
+        String sqlStatement = "SELECT Asset_Name, Asset_Number, AssetID, Asset_TypeID, Inventory_StatusID, drvEmpNo, VendorID, Model, Serial, imageDate FROM tblAssets WHERE (Asset_Name = '" + req.assetName + "') AND (Asset_Number = '" + req.assetNumber + "') AND (Asset_TypeID = '" + req.typeID + "')";
             System.out.println(sqlStatement);
         return sqlStatement;
     }
@@ -326,7 +329,7 @@ public class sqlStatementHandler {
      */
     public String reqAssetLaptopInfo(AssetRequest<?> request){
         search req = (search)request.getData();
-        String sqlStatement = "SELECT Carrier, Phone_Number, SIM_Card, IMEI_ID FROM tblAssets WHERE (Asset_Name = '" + req.assetName + "') AND (AssetID = '" + req.assetID + "') AND (Asset_TypeID = '" + req.typeID + "')";
+        String sqlStatement = "SELECT Carrier, Phone_Number, SIM_Card, IMEI_ID FROM tblAssets WHERE (Asset_Name = '" + req.assetName + "') AND (Asset_Number = '" + req.assetNumber + "') AND (Asset_TypeID = '" + req.typeID + "')";
         return sqlStatement;
     }
 
@@ -338,7 +341,13 @@ public class sqlStatementHandler {
      */
     public String reqAssetDamagedInfo(AssetRequest<?> request){
         search req = (search)request.getData();
-        String sqlStatement = "SELECT sentForRepair, dateSentForRepair, damageDescription FROM tblAssets WHERE (Asset_Name = '" + req.assetName + "') AND (AssetID = '" + req.assetID + "') AND (Asset_TypeID = '" + req.typeID + "')";
+        String sqlStatement = "SELECT sentForRepair, dateSentForRepair, damageDescription FROM tblAssets WHERE (Asset_Name = '" + req.assetName + "') AND (Asset_Number = '" + req.assetNumber + "') AND (Asset_TypeID = '" + req.typeID + "')";
+        return sqlStatement;
+    }
+    
+    public String updateAssetInfo(AssetRequest<?> request){
+        Asset req = (Asset)request.getData();
+        String sqlStatement = "UPDATE tblAssets SET ('Asset_Name = " + req.getAssetName() + "') ('Model = " + req.getAssetModel() + "') ('Serial = " + req.getSerialNumber() + "') ('imageDate = " + req.getImageDate() + "') ('') ('') ('') WHERE ___";
         return sqlStatement;
     }
 

@@ -10,9 +10,9 @@ import enums.*;
 /*  The Asset class is an object that represents each individual asset  */
 public class Asset implements Serializable{
     //Variable declarations
-        private String assetName, model, serialNumber, imageDate;
+        private String assetName, model, serialNumber, imageDate, assetNumber;
         private assetTypes assetType;
-        private int assetNumber;
+        private int assetID;
         private vendors vendor;
         private statusTypes invStat;
         private User user;
@@ -26,7 +26,7 @@ public class Asset implements Serializable{
         private String repairDate, damageDescription;
 
     //Constructor for an asset. Called when a new asset is being created by a user
-    public Asset(String assetName,assetTypes assetType,int assetNumber,vendors vendor,String model,String serialNumber,statusTypes invStat,User user){
+    public Asset(String assetName, assetTypes assetType, String assetNumber, vendors vendor, String model, String serialNumber, statusTypes invStat, User user){
         this.assetName = assetName;
         this.assetType = assetType;
         this.assetNumber = assetNumber;
@@ -37,11 +37,13 @@ public class Asset implements Serializable{
         this.user = user;
     }
 
-    public Asset(String assetname, int assetNumber, assetTypes assetType){
+    public Asset(String assetname, String assetNumber, assetTypes assetType){
         this.assetName = assetname;
         this.assetType = assetType;
         this.assetNumber = assetNumber;
     }
+
+    public Asset(){}
 
     public String toListString(){
         return (assetName + "\t" + assetNumber + "\t" + assetType);
@@ -60,7 +62,8 @@ public class Asset implements Serializable{
 
     public String getAssetName(){ return assetName; }
     public assetTypes getAssetType(){ return assetType; }
-    public int getAssetNumber(){ return assetNumber; }
+    public String getAssetNumber(){ return assetNumber; }
+    public int getAssetID(){ return assetID; }
     public vendors getAssetVendor(){ return vendor; }
     public String getAssetModel(){ return model; }
     public String getSerialNumber(){ return serialNumber; }
@@ -82,7 +85,8 @@ public class Asset implements Serializable{
 
     public void setAssetName(String assetName){ this.assetName = assetName; }
     public void setAssetType(assetTypes assetType){ this.assetType = assetType; }
-    public void setAssetNumber(int assetNumber){ this.assetNumber = assetNumber; }
+    public void setAssetNumber(String assetNumber){ this.assetNumber = assetNumber; }
+    public void setAssetID(int assetID){ this.assetID = assetID; }
     public void setAssetVendor(vendors vendor){ this.vendor = vendor; }
     public void setAssetModel(String model){ this.model = model; }
     public void setSerialNumber(String serialNumber){ this.serialNumber = serialNumber; }

@@ -219,19 +219,20 @@ public class GUIController {
 
         // Navigation panel initialization
         assetsBtn = new JButton("Assets");
-        assetsBtn.setActionCommand("assetsBtn_viewAssetListBtn");
-        assetsBtn.addActionListener(new ButtonClickListener());
+            assetsBtn.setActionCommand("assetsBtn_viewAssetListBtn");
+            assetsBtn.addActionListener(new ButtonClickListener());
         newAssetBtn = new JButton("New Asset");
-        newAssetBtn.setActionCommand("newAssetBtn_createNewAssetBtn");
-        newAssetBtn.addActionListener(new ButtonClickListener());
+            newAssetBtn.setActionCommand("newAssetBtn_createNewAssetBtn");
+            newAssetBtn.addActionListener(new ButtonClickListener());
         usersBtn = new JButton("Users");
-        usersBtn.setActionCommand("usersBtn_viewUserListBtn");
-        usersBtn.addActionListener(new ButtonClickListener());
+            usersBtn.setActionCommand("usersBtn_viewUserListBtn");
+            usersBtn.addActionListener(new ButtonClickListener());
         newUserBtn = new JButton("New User");
-        newUserBtn.setActionCommand("newUserBtn_createNewUserBtn");
-        newUserBtn.addActionListener(new ButtonClickListener());
-        // saveBtn = new JButton("Save"); //May not be necessary, but initialization is
-        // still included just in case
+            newUserBtn.setActionCommand("newUserBtn_createNewUserBtn");
+            newUserBtn.addActionListener(new ButtonClickListener());
+        saveBtn = new JButton("Save");
+            saveBtn.setActionCommand("saveBtn");
+            saveBtn.addActionListener(new ButtonClickListener());
         navBarLayout = new FlowLayout(FlowLayout.LEFT);
         navPanel = new JPanel();
         navDims = new Dimension((int) screenSize.getWidth() - 25, (int) screenSize.getHeight() / 10);
@@ -243,28 +244,29 @@ public class GUIController {
         navPanel.add(newAssetBtn);
         navPanel.add(usersBtn);
         navPanel.add(newUserBtn);
+        navPanel.add(saveBtn);
         window.getContentPane().add(navPanel);
 
         // Search panel initialization
         
         asset_search_none = new JRadioButton("No Filter");
-        asset_search_none.setActionCommand("asset_search_none_radBtn");
-        asset_search_none.addActionListener(new ButtonClickListener());
+            asset_search_none.setActionCommand("asset_search_none_radBtn");
+            asset_search_none.addActionListener(new ButtonClickListener());
         asset_search_compName = new JRadioButton("Computer Name");
-        asset_search_compName.setActionCommand("asset_search_compName_radBtn");
-        asset_search_compName.addActionListener(new ButtonClickListener());
+            asset_search_compName.setActionCommand("asset_search_compName_radBtn");
+            asset_search_compName.addActionListener(new ButtonClickListener());
         asset_search_assetNumber = new JRadioButton("Asset Number");
-        asset_search_assetNumber.setActionCommand("asset_search_assetNumber_radBtn");
-        asset_search_assetNumber.addActionListener(new ButtonClickListener());
+            asset_search_assetNumber.setActionCommand("asset_search_assetNumber_radBtn");
+            asset_search_assetNumber.addActionListener(new ButtonClickListener());
         asset_search_assetType = new JRadioButton("Asset Type");
-        asset_search_assetType.setActionCommand("asset_search_assetType_radBtn");
-        asset_search_assetType.addActionListener(new ButtonClickListener());
+            asset_search_assetType.setActionCommand("asset_search_assetType_radBtn");
+            asset_search_assetType.addActionListener(new ButtonClickListener());
         asset_search_model = new JRadioButton("Model");
-        asset_search_model.setActionCommand("asset_search_model_radBtn");
-        asset_search_model.addActionListener(new ButtonClickListener());
+            asset_search_model.setActionCommand("asset_search_model_radBtn");
+            asset_search_model.addActionListener(new ButtonClickListener());
         asset_search_phoneNumber = new JRadioButton("Phone Number");
-        asset_search_phoneNumber.setActionCommand("asset_search_phoneNumber_radBtn");
-        asset_search_phoneNumber.addActionListener(new ButtonClickListener());
+            asset_search_phoneNumber.setActionCommand("asset_search_phoneNumber_radBtn");
+            asset_search_phoneNumber.addActionListener(new ButtonClickListener());
 
         asset_search = new ButtonGroup();
         asset_search.add(asset_search_none);
@@ -369,7 +371,10 @@ public class GUIController {
         contentPanel.setPreferredSize(contentDims);
         contentPanel.setBackground(Color.YELLOW);
 
-        overall.setSize(contentDims);
+        Dimension nestedDisplayDims = new Dimension(((int) screenSize.getWidth() / 3 * 2) - 10,
+                ((int) screenSize.getHeight() / 10 * 9) - 10);
+
+        overall.setPreferredSize(nestedDisplayDims);
         Dimension innerContentDims = new Dimension((int)contentDims.getWidth(),(int)contentDims.getHeight()/3);
         genericCells.setSize(innerContentDims);
         laptopCells.setSize(innerContentDims);
@@ -769,12 +774,76 @@ public class GUIController {
                         clDr.sendRequest(searcherPlaceholderRequest);
                     }
                     break;
+                case "saveBtn":
+                    System.out.println("Save Button Recognized");
+                    /**
+                     * TODO :   1. Check to see which button group is active
+                     *          2. call the respective formating class
+                     *          3. Return the formatted object to the server via two routes based on whether it is a . . .
+                     *                      User
+                     *                      Asset
+                     */
+                    if(current_group.equals(asset_search)){
+                        //Assets
+                        Asset updatingAsset = formatAssetForUpdate();
+                        AssetRequest<Asset> sendUpdate = new AssetRequest<Asset>(RequestType.SAVE_ASSET, updatingAsset);
+                        clDr.sendRequest(sendUpdate);
+                    }else{
+                        //Users
+                        System.out.println("Save users recognized");
+                    }
+                    break;
                 default:
                     System.out.println(command);
                     break;
             }
         }
 
+    }
+
+    /**
+     * Formats the asset information in the content panel so that it can be sent to the server for updates.
+     * The content pane must be showing an asset in order for this method to be called. If the content pane
+     * is not being shown when the method is called, it will throw a null pointer exception and fail to run.
+     * 
+     * @return A new asset based on the information stored in the content panel
+     */
+    private Asset formatAssetForUpdate(){
+        Asset toReturn = new Asset();
+        //General asset fields
+        toReturn.setAssetName(nameField.getText());
+        toReturn.setAssetNumber(IDnumberField.getText());
+        toReturn.setAssetModel(modelField.getText());
+        toReturn.setSerialNumber(serialField.getText());
+        toReturn.setInvStat(stringToInvStat((String)assetInventoryStatusCB.getSelectedItem()));
+        //Add in setting the User once the user search method is flushed out
+        toReturn.setAssetVendor(stringToVendors((String)assetVendorCB.getSelectedItem()));
+        //Laptops
+        //Add in setting the Asset air card carrier
+        toReturn.setPhoneNumber(phoneField.getText());
+        toReturn.setIMEINumber(imeiField.getText());
+        toReturn.setSIMNumber(simField.getText());
+        //Damaged Devices
+        toReturn.setDamageDescription(damageDescriptionArea.getText());
+        toReturn.setRepairDate(repairDateField.getText());
+
+        return null;
+    }
+
+    /**
+     * Formats the user information in the content panel so that it can be sent to the server for updates.
+     * The content pane must be showing a user's information in order for this method to be called successfully.
+     * If a user is not being actively shown to the content panel when the method is called, it will throw
+     * an error and fail to run.
+     * 
+     * @return A new user based on the information stored in the content panel
+     */
+    private User formatUserForUpdate(){
+        User toReturn = new User();
+        toReturn.setFirstName(firstNameField.getText());
+        toReturn.setLastName(lastNameField.getText());
+        toReturn.setEmpNo(Integer.parseInt(deptCodeField.getText()));
+        return null;
     }
 
     /**
@@ -884,6 +953,11 @@ public class GUIController {
         this.activeAsset = activeAsset;
     }
 
+    /**
+     * Reads in an inventory status and returns that status as a String.
+     * 
+     * Mainly used for the GUI and showing which inventory statuses can be selected
+     */
     private String invStatAsString(statusTypes stat){
         if(stat!=null){
             switch(stat){
@@ -901,6 +975,35 @@ public class GUIController {
         }
     }
 
+    /**
+     * Helper class that reads in a string, and returns its equivalent Inventory Status
+     * 
+     * Used when the search button is pressed on the GUI. The string is pulled from the
+     * active asset's inventory status, and is returned to help create an asset for saving.
+     */
+    private statusTypes stringToInvStat(String stat){
+        if(!stat.equals(null)){
+            switch(stat){
+                case "Assigned": return statusTypes.ASSIGNED;
+                case "Disposed": return statusTypes.DISPOSED;
+                case "Retired": return statusTypes.RETIRED;
+                case "Loaned": return statusTypes.LOANED;
+                case "Damaged": return statusTypes.DAMAGED;
+                case "Missing": return statusTypes.MISSING;
+                case "In Stock": return statusTypes.INSTOCK;
+                default: return statusTypes.NONE;
+            }
+        }else{
+            return statusTypes.NONE;
+        }
+        
+    }
+
+    /**
+     * Helper class that reads in a vendor and returns its equivalent as a string
+     * @param ven : A vendor that has been assigned to an Asset or AirCard
+     * @return : A string representing a vendor that can be shown on the GUI
+     */
     private String vendorAsString(vendors ven){
         switch(ven){
             case DELL: return "DELL";
@@ -919,5 +1022,30 @@ public class GUIController {
         }
     }
 
+    /**
+     * Helper class that converts a string to a vendor enum
+     */
+    private vendors stringToVendors(String vendor){
+        if(!vendor.equals(null)){
+            switch(vendor){
+                case "DELL": return vendors.DELL;
+                case "Panasonic": return vendors.PANASONIC;
+                case "Lenovo": return vendors.LENOVO;
+                case "HP": return vendors.HP;
+                case "Verizon": return vendors.VERIZON;
+                case "AT&T": return vendors.ATandT;
+                case "Xerox": return vendors.XEROX;
+                case "Asus": return vendors.ASUS;
+                case "Cisco": return vendors.CISCO;
+                case "Cannon": return vendors.CANNON;
+                case "Lexmark": return vendors.LEXMARK;
+                case "LG": return vendors.LG;
+                default: return vendors.NONE;
+            }
+        }else{
+            return vendors.NONE;
+        }
+        
+    }
 
 }

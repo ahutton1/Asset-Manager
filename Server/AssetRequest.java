@@ -113,7 +113,21 @@ public class AssetRequest<E extends Serializable> implements Serializable{
          * Used to notify the server that the specific client thread is going to disconnect from the server. Allows for
          * a safe connection close and the server to close the thread and continue to run.
          */
-        CLOSE_CONNECTION
+        CLOSE_CONNECTION,
+
+        /**
+         * CLIENT
+         * Used to notify the server that a connected client has made changes to their respective active asset and that those
+         * changes need to be pushed to the server, database, and other connected clients.
+         */
+        SAVE_ASSET,
+
+        /**
+         * CLIENT
+         * Used to notify the server that a connected client has made changes to their respective active user and that those
+         * changes need to be pushed to the server, database, and other connected clients.
+         */
+        SAVE_USER
     }
 
     private RequestType type;

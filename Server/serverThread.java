@@ -81,6 +81,10 @@ public class serverThread extends AssetConnection{
                         sendRequest(localListings);
                             System.out.println("Sent");
                         break;
+                    case SAVE_ASSET:
+                            System.out.println("Save asset received on the serverside from the client");
+                        //Placeholder
+                        break;
                     default:
                         throw new Exception("Error reading request from client");
                 }
